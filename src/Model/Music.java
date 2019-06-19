@@ -1,7 +1,6 @@
 package Model;
 
 import mp3agic.*;
-
 import java.io.*;
 
 
@@ -16,20 +15,14 @@ public class Music extends Media {
     private String comment;
     private String track = "";
     private int genre;
+    private byte[] imageAlbum;
 
-    public Music(File musicFile) throws IOException {
+    public Music(File musicFile) throws IOException, InvalidDataException, UnsupportedTagException {
         this.musicFile = musicFile;
-        getID3v1_2();
-        System.out.println(title);
-        System.out.println(artist);
-        System.out.println(album);
-        System.out.println(year);
-        System.out.println(comment);
-        System.out.println(track);
-        System.out.println(genre);
+        getID3v1();
     }
 
-    private void getID3v1_2() throws IOException {
+    private void getID3v1_2() throws IOException, InvalidDataException, UnsupportedTagException {
 
         byte[] buffer = new byte[125];
         RandomAccessFile file = new RandomAccessFile(musicFile, "r");
@@ -55,7 +48,7 @@ public class Music extends Media {
             }
         }
         genre = (int) details.charAt(124);
-
+        imageAlbum = getArtWork();
     }
 
     private void getID3v1() throws InvalidDataException, IOException, UnsupportedTagException {
@@ -67,9 +60,10 @@ public class Music extends Media {
         year = id3v1.getYear();
         track = id3v1.getTrack();
         genre = id3v1.getGenre();
+        imageAlbum = getArtWork();
     }
 
-    private void getArtWork() throws InvalidDataException, IOException, UnsupportedTagException {
+    private byte[] getArtWork() throws InvalidDataException, IOException, UnsupportedTagException {
 
         Mp3File mp3File = new Mp3File(musicFile.getPath());
         if ( mp3File.hasId3v2Tag() ) {
@@ -77,12 +71,46 @@ public class Music extends Media {
             byte[] imageBuffer = mp3File.getId3v2Tag().getAlbumImage();
 
             if ( imageBuffer != null ) {
-                String temp = mp3File.getId3v2Tag().getAlbumImageMimeType();
-                RandomAccessFile file = new RandomAccessFile("Album_artWork", "rw");
-                file.write(temp.getBytes());
-                file.close();
-
+                return imageBuffer;
             }
         }
+
+        return new byte[0];
+    }
+
+    public byte[] getImageAlbum() {
+        return imageAlbum;
+    }
+
+    public File getMusicFile() {
+        return musicFile;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getTrack() {
+        return track;
+    }
+
+    public int getGenre() {
+        return genre;
     }
 }

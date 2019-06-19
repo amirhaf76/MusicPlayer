@@ -9,9 +9,11 @@ public class Main {
     public static void main(String[] args) {
 
         try {
+            File file = new File("Sham Pain - Five Finger Death Punch.mp3");
+            Music music = new Music(file);
+            new MakeImage(new File("album-artwork"));
 
-            Music music = new Music(new File("Sham Pain - Five Finger Death Punch.mp3"));
-        } catch (IOException e) {
+        } catch (IOException | InvalidDataException | UnsupportedTagException e) {
             e.printStackTrace();
         }
 //        System.out.println("helloArt".substring(1,5));

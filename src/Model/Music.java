@@ -112,4 +112,6 @@ public class Music extends Media {
     public int getGenre() {
         return genre;
     }
+
+
 }

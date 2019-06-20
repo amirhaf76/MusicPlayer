@@ -27,7 +27,7 @@ public class List {
     public void add(Media media) {
 
         if ( media instanceof Music ) {
-            if (medium.contains(media)) {
+            if ( !medium.contains(media) ) {
                 medium.add(media);
             }
         }

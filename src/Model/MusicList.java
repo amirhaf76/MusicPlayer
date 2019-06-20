@@ -6,15 +6,15 @@ public class MusicList extends List {
         super(name);
     }
 
-    public void add(Media media) { // add media if...
+    public void addMusic(Media media) { // add media if...
         if ( media instanceof Music) { // if media is Music, ...
-            medium.add(media);
+            super.add(media);
         }
     }
 
-    public void remove(Media media) { // remove media if ...
+    public void removeMusic(Media media) { // remove media if ...
         if ( media instanceof  Music ) { // if media is Music, ...
-            medium.remove(media);
+            super.remove(media);
         }
 
     }

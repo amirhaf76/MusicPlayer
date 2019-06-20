@@ -2,11 +2,13 @@ package Model;
 
 import mp3agic.*;
 import java.io.*;
+import java.sql.Time;
+
 
 
 public class Music extends Media {
 
-    private final File musicFile;
+//    private final File mediaFile;
 
     private String title;
     private String artist;
@@ -17,15 +19,16 @@ public class Music extends Media {
     private int genre;
     private byte[] imageAlbum;
 
-    public Music(File musicFile) throws IOException, InvalidDataException, UnsupportedTagException {
-        this.musicFile = musicFile;
+    public Music(File mediaFile, Time time) throws IOException, InvalidDataException, UnsupportedTagException {
+        super(mediaFile, time);
         getID3v1();
+        imageAlbum = getArtWork();
     }
 
     private void getID3v1_2() throws IOException, InvalidDataException, UnsupportedTagException {
 
         byte[] buffer = new byte[125];
-        RandomAccessFile file = new RandomAccessFile(musicFile, "r");
+        RandomAccessFile file = new RandomAccessFile(mediaFile, "r");
         file.seek(file.length() - 125);
 
         if (file.read(buffer,0,125) != 125 ) {
@@ -48,11 +51,11 @@ public class Music extends Media {
             }
         }
         genre = (int) details.charAt(124);
-        imageAlbum = getArtWork();
+
     }
 
     private void getID3v1() throws InvalidDataException, IOException, UnsupportedTagException {
-        ID3v1 id3v1 = (new Mp3File(musicFile.getPath())).getId3v1Tag();
+        ID3v1 id3v1 = (new Mp3File(mediaFile.getPath())).getId3v1Tag();
         title = id3v1.getTitle();
         artist = id3v1.getArtist();
         album = id3v1.getAlbum();
@@ -60,12 +63,12 @@ public class Music extends Media {
         year = id3v1.getYear();
         track = id3v1.getTrack();
         genre = id3v1.getGenre();
-        imageAlbum = getArtWork();
+
     }
 
     private byte[] getArtWork() throws InvalidDataException, IOException, UnsupportedTagException {
 
-        Mp3File mp3File = new Mp3File(musicFile.getPath());
+        Mp3File mp3File = new Mp3File(mediaFile.getPath());
         if ( mp3File.hasId3v2Tag() ) {
 
             byte[] imageBuffer = mp3File.getId3v2Tag().getAlbumImage();
@@ -80,10 +83,6 @@ public class Music extends Media {
 
     public byte[] getImageAlbum() {
         return imageAlbum;
-    }
-
-    public File getMusicFile() {
-        return musicFile;
     }
 
     public String getTitle() {

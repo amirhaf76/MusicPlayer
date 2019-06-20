@@ -23,10 +23,18 @@ public class List {
         return medium;
     }
 
-    // TODO: 6/18/2019 add add and remove method with array of medium as input
 
     public void add(Media media) {
-        medium.add(media);
+
+        if ( media instanceof Music ) {
+            if (medium.contains(media)) {
+                medium.add(media);
+            }
+        }
+
+        if ( media instanceof Video ) {
+            // TODO: 6/20/2019 video properties
+        }
     }
     public void remove(Media media) {
         medium.remove(media);

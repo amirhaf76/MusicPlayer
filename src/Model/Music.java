@@ -3,18 +3,18 @@ package Model;
 import mp3agic.*;
 import java.io.*;
 import java.sql.Time;
-
+import java.util.Objects;
 
 
 public class Music extends Media {
 
 //    private final File mediaFile;
 
-    private String title;
-    private String artist;
-    private String album;
-    private String  year;
-    private String comment;
+    private String title = "<nothing>";
+    private String artist = "<nothing>";
+    private String album = "<nothing>";
+    private String  year = "<nothing>";
+    private String comment = "<nothing>";
     private String track = "";
     private int genre;
     private byte[] imageAlbum;
@@ -114,4 +114,18 @@ public class Music extends Media {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Music music = (Music) o;
+        return title.equals(music.title) &&
+                artist.equals(music.artist) &&
+                album.equals(music.album);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, artist, album);
+    }
 }

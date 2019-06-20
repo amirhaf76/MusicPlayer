@@ -16,5 +16,7 @@ public class MusicList extends List {
         if ( media instanceof  Music ) { // if media is Music, ...
             medium.remove(media);
         }
+
     }
+
 }

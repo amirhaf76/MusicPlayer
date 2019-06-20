@@ -5,13 +5,13 @@ import Model.Music;
 
 import java.util.Comparator;
 
-public class SortByArtist implements Comparator<Media> {
+public class SortByAlbum implements Comparator<Media> {
 
     @Override
     public int compare(Media o1, Media o2) {
         if ( o1 instanceof Music && o2 instanceof Music ) {
-            return ((Music) o1).getArtist().compareToIgnoreCase(
-                    ((Music) o2).getArtist()
+            return ((Music) o1).getAlbum().compareToIgnoreCase(
+                    ((Music) o2).getAlbum()
             );
         }
 

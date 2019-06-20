@@ -16,7 +16,7 @@
  *                                                                    
  * VERSION 4.1                                                        
  *   changes made since last update:                                  
- *   date   programmers         comment                        
+ *   time   programmers         comment
  *  27.2.92 F.O.Witte (ITT Intermetall)				                  
  *  8/24/93 M. Iwadare          Changed for 1 pass decoding.          
  *  7/14/94 J. Koller		    useless 'typedef' before huffcodetab  removed

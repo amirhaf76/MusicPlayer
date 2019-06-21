@@ -4,9 +4,8 @@ import java.io.File;
 import java.sql.Time;
 
 public class Media {
-    protected final File mediaFile;
-    protected Time time;
-
+    private final File mediaFile;
+    private Time time;
 
     // TODO: 6/20/2019 SimpleDataFormat
 

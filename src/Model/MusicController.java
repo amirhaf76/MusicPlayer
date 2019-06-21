@@ -1,60 +1,80 @@
 package Model;
 
 import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.Player;
-
 import java.io.*;
+import static Model.CONTROL.*;
 
+public class MusicController extends MusicPlayer {
 
-public class MusicController {
+    // file
+    private Music presentMusic;
+    private BufferedInputStream buffer;
+    private int indexOfMusic;
 
-    private File musicFile;
+    // player
     private MachinePlayer player;
 
-    private BufferedInputStream buffer;
-
+    // frames and time
     private long numberOfFrame;
     private int lastTime = 0;
 
+
     private Object lock = new Object(); // make player lock
 
+    private CONTROL command;
+
+    // playing mode
+    private CONTROL repetitionState = ONECE;
+    private boolean shuffle = false;
 
 
-    public MusicController(File musicFile) throws IOException, JavaLayerException {
-        this.musicFile = musicFile;
+    public MusicController() throws IOException, JavaLayerException {
 
-        buffer = new BufferedInputStream(new FileInputStream(musicFile));
-        player = new MachinePlayer(buffer);
+        prepareMusic();
 
         numberOfFrame = player.findNumbersOfFrame();
 
         player.close(); // close player and buffer
 
+        prepareMusic(); // because player and buffer is closed
+        command = CONTROL.NOTSTARTED;
+        this.start();
     }
 
-
-
-    public void start(long frame) throws IOException, JavaLayerException {
-        playMusic();
-    }
 
     private void playMusic() throws IOException, JavaLayerException {
-
-        buffer = new BufferedInputStream(new FileInputStream(musicFile));
-        player = new MachinePlayer(buffer);
 
         Thread runPlayer = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
 
+                    while (command.equals(CONTROL.PLAYING)) {
 
-                    player.skipMusic(7800);
-                    player.play();
-                    System.out.println("end");
+                        if (!player.play(1)) {
+                            command = CONTROL.STOP;
+                            break; // finish music
+                        } else {
+                            numberOfFrame++;
+                        }
 
+                        synchronized (this) {
 
-                } catch (JavaLayerException e) {
+                            switch (command) {
+                                case PAUSE:
+                                    wait();
+                                    break;
+
+                                case NEXT:
+                                case PREVIOUS:
+                                    command = CONTROL.STOP;
+                                    break;
+                                default:
+                            }
+                        }
+                    }
+
+                } catch (JavaLayerException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -62,43 +82,99 @@ public class MusicController {
 
         runPlayer.start(); // if song reach to the end, player close buffer
 
+    }
+
+
+    public void start() throws IOException, JavaLayerException {
+        synchronized (this) {
+            switch (command) {
+                case NOTSTARTED:
+                    command = CONTROL.PLAYING;
+                    playMusic();
+                    break;
+
+                case PAUSE:
+                    command = CONTROL.PLAYING;
+                    notifyAll();
+                    break;
+                default:
+
+            }
+        }
+    }
+
+
+    public void stopMusic() {
+        synchronized (this) {
+            if (command.equals(CONTROL.PLAYING) ||
+                    command.equals(CONTROL.PAUSE)) {
+                command = CONTROL.STOP;
+            }
+        }
+    }
+
+    public void nextMusic(File musicFile) {
+        synchronized (this) {
+            if (command.equals(CONTROL.PAUSE))
+                notifyAll();
+
+            command = CONTROL.NEXT;
+        }
+    }
+
+    public void previousMusic() {
+        synchronized (this) {
+            if (command.equals(CONTROL.PAUSE)) {
+                notifyAll();
+            } else if (command.equals(CONTROL.STOP)) {
+
+            }
+            command = CONTROL.PREVIOUS;
+        }
+    }
+
+
+    private void prepareMusic() throws IOException, JavaLayerException {
+        // phase 1: find music
+        findMusic();
+
+        // find number of frames
+        buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
+        player = new MachinePlayer(buffer);
+
+        numberOfFrame = player.findNumbersOfFrame();
+
+        player.close(); // close player and buffer
+
+        // prepare for playing
+        buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
+        player = new MachinePlayer(buffer);
 
     }
 
-    public void resume() {
+    private void findMusic() {
 
+        switch (repetitionState) {
+            case ALWAYS:
+                presentMusic = super.getMusics().get(indexOfMusic);
+                if ( indexOfMusic < super.getMusics().size() ) {
+                    indexOfMusic++;
+                } else {
+                    indexOfMusic = 0;
+                }
+                break;
+            case ONECE:
+                // it never happen for findMusic()
+                break;
+            case JUSTTHIS:
+                // it doesn't do anything because the present music have to play
+                break;
+                default:
+
+        }
     }
 
-    public void stop() {
-
-    }
-
-    public void next(File musicFile) {
-
-    }
-
-    public void previous() {
-
-    }
 }
 
-enum CONTROL {
-    PAUSE(0, "Pause"), RESUME(1, "Resume"), STOP(2, "Stop"),
-    NEXT(3, "Next"), PREVIOUS(4, "Previous");
 
-    private int state;
-    private String name;
 
-    CONTROL(int state, String name) {
-        this.state = state;
-        this.name = name;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public String getName() {
-        return name;
-    }
-}

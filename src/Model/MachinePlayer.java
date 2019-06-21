@@ -2,7 +2,6 @@ package Model;
 
 
 import javazoom.jl.decoder.Bitstream;
-
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
@@ -10,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class MachinePlayer extends Player {
+
     private Bitstream bitstream;
 
 
@@ -49,4 +49,6 @@ public class MachinePlayer extends Player {
 
         return size;
     }
+
+
 }

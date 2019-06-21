@@ -30,31 +30,7 @@ public class MusicPlayer {
 
     }
 
-    public static void playMusic(File file) throws JavaLayerException, IOException, InterruptedException, UnsupportedAudioFileException {
-
-        System.out.println("here");
-        MusicController p = new MusicController(file);
-        p.startMusic(95000);
-        System.out.println("here2");
-
-
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("here3");
-
-//        System.out.println(p.getPosition());
-
-        System.out.println("here4");
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("here5");
-//        System.out.println(p.getPosition());
-        System.out.println("here6");
+    public ArrayList<Music> getMusics() {
+        return musics;
     }
 }

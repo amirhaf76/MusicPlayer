@@ -28,7 +28,7 @@ public class Music extends Media {
     private void getID3v1_2() throws IOException, InvalidDataException, UnsupportedTagException {
 
         byte[] buffer = new byte[125];
-        RandomAccessFile file = new RandomAccessFile(mediaFile, "r");
+        RandomAccessFile file = new RandomAccessFile(super.getMediaFile(), "r");
         file.seek(file.length() - 125);
 
         if (file.read(buffer,0,125) != 125 ) {
@@ -55,7 +55,7 @@ public class Music extends Media {
     }
 
     private void getID3v1() throws InvalidDataException, IOException, UnsupportedTagException {
-        ID3v1 id3v1 = (new Mp3File(mediaFile.getPath())).getId3v1Tag();
+        ID3v1 id3v1 = (new Mp3File(getMediaFile().getPath())).getId3v1Tag();
         title = id3v1.getTitle();
         artist = id3v1.getArtist();
         album = id3v1.getAlbum();
@@ -68,7 +68,7 @@ public class Music extends Media {
 
     private byte[] getArtWork() throws InvalidDataException, IOException, UnsupportedTagException {
 
-        Mp3File mp3File = new Mp3File(mediaFile.getPath());
+        Mp3File mp3File = new Mp3File(getMediaFile().getPath());
         if ( mp3File.hasId3v2Tag() ) {
 
             byte[] imageBuffer = mp3File.getId3v2Tag().getAlbumImage();

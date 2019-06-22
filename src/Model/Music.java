@@ -18,6 +18,9 @@ public class Music extends Media {
     private String track = "";
     private int genre;
     private byte[] imageAlbum;
+    private int frames = 0;
+//    private long
+    // TODO: 6/23/2019 frames and time
 
     public Music(File mediaFile, Time time) throws IOException, InvalidDataException, UnsupportedTagException {
         super(mediaFile, time);
@@ -64,11 +67,13 @@ public class Music extends Media {
         track = id3v1.getTrack();
         genre = id3v1.getGenre();
 
+
     }
 
     private byte[] getArtWork() throws InvalidDataException, IOException, UnsupportedTagException {
 
         Mp3File mp3File = new Mp3File(getMediaFile().getPath());
+        frames = mp3File.getFrameCount();
         if ( mp3File.hasId3v2Tag() ) {
 
             byte[] imageBuffer = mp3File.getId3v2Tag().getAlbumImage();
@@ -113,6 +118,9 @@ public class Music extends Media {
         return genre;
     }
 
+    public int getFrames() {
+        return frames;
+    }
 
     @Override
     public boolean equals(Object o) {

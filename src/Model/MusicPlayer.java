@@ -1,10 +1,5 @@
 package Model;
 
-import javazoom.jl.decoder.JavaLayerException;
-
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MusicPlayer {
@@ -13,15 +8,17 @@ public class MusicPlayer {
 
 
     public void addMusic(Media media) {
-
+//        System.out.println(media);
         if ( media instanceof Music ) { // if media is Music, ...
+//            System.out.println(media);
             if ( !musics.contains(media) ) { // if there is not any music like media, ...
+//                System.out.println(media);
                 musics.add((Music) media);
             }
         }
     }
 
-    public void addMusic(ArrayList<Media> medium) {
+    public void addMusic(ArrayList<Music> medium) {
 
         for (Media m : // for all medium
                 medium) {

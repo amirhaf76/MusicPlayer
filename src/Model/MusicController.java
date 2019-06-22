@@ -52,8 +52,7 @@ public class MusicController extends MusicPlayer {
                     while (command.equals(CONTROL.PLAYING)) {
 
                         if (!player.play(1)) {
-
-                            command = CONTROL.STOP;
+                            command = STOP;
                             break; // finish music
                         } else {
 
@@ -129,18 +128,18 @@ public class MusicController extends MusicPlayer {
                     break;
 
                 case FIINISH:
+                case NOTSTARTED:
+
                     indexOfMusic = 0;
                     pastMusic.removeAll(pastMusic.subList(0, pastMusic.size()));
+
+                    command = PLAYING;
+
                     if ( repetitionState.equals(JUSTTHIS) ) {
-                        command = PLAYING;
                         prepareMusic(presentMusic);
                         playMusic();
                         break;
                     }
-                default:
-
-                    command = CONTROL.PLAYING;
-
 
                     if (shuffle) {
                         prepareMusic( nextMusicBasedOnShuffle() );
@@ -185,9 +184,9 @@ public class MusicController extends MusicPlayer {
                     nextMusicBasedOnMode()
             );
 
-            command = NOTSTARTED;
+            command = PLAYING;
 
-            start();
+            playMusic();
         }
     }
 
@@ -195,12 +194,14 @@ public class MusicController extends MusicPlayer {
         synchronized (lock) {
             command = PREVIOUS;
             lock.wait();
+
             if (shuffle) {
                 prepareMusic( previousMusicBasedOnShuffle() );
             } else {
                 prepareMusic( previousMusicBasedOnArrangement() );
             }
-            this.start();
+            command = PLAYING;
+            playMusic();
         }
     }
 
@@ -271,9 +272,12 @@ public class MusicController extends MusicPlayer {
     }
 
     private Music previousMusicBasedOnArrangement() {
-        if ( indexOfMusic == 0 || indexOfMusic >= super.getMusics().size() ){
+        if ( indexOfMusic == 0 ){
             return super.getMusics().get(super.getMusics().size() - 1);
-        } else {
+        } else if ( indexOfMusic >= super.getMusics().size() ){
+            return super.getMusics().get(0);
+        }
+        else {
             indexOfMusic--;
             return super.getMusics().get(indexOfMusic);
         }

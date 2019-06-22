@@ -2,7 +2,6 @@ package Model;
 
 import javazoom.jl.decoder.JavaLayerException;
 
-import javax.swing.text.MutableAttributeSet;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -16,6 +15,7 @@ public class MusicController extends MusicPlayer {
     private BufferedInputStream buffer;
 
     // playing mode
+    private static int indexOfShuffleMusic = 1;
     private CONTROL repetitionState = ONECE;
     private boolean shuffle = false;
     private int indexOfMusic = 0;
@@ -27,6 +27,7 @@ public class MusicController extends MusicPlayer {
 
     // frames and time
     private long numberOfFrame;
+    private long totoalTime;
     private int lastTime = 0;
 
 
@@ -52,7 +53,7 @@ public class MusicController extends MusicPlayer {
                     while (command.equals(CONTROL.PLAYING)) {
 
                         if (!player.play(1)) {
-                            command = STOP;
+                            command = FIINISH;
                             break; // finish music
                         } else {
 
@@ -130,9 +131,6 @@ public class MusicController extends MusicPlayer {
                 case FIINISH:
                 case NOTSTARTED:
 
-                    indexOfMusic = 0;
-                    pastMusic.removeAll(pastMusic.subList(0, pastMusic.size()));
-
                     command = PLAYING;
 
                     if ( repetitionState.equals(JUSTTHIS) ) {
@@ -205,7 +203,7 @@ public class MusicController extends MusicPlayer {
         }
     }
 
-    private Music nextMusicBasedOnMode() throws IOException, JavaLayerException {
+    private Music nextMusicBasedOnMode() {
 
         switch (repetitionState) {
             case ONECE:
@@ -251,6 +249,8 @@ public class MusicController extends MusicPlayer {
 
             numberOfFrame = player.findNumbersOfFrame();
 
+            totoalTime = player.getPosition();
+            System.out.println(numberOfFrame);
             player.close(); // close player and buffer
 
             // prepare for playing
@@ -262,10 +262,17 @@ public class MusicController extends MusicPlayer {
 
     private Music previousMusicBasedOnShuffle() {
         Music music;
-        if ( pastMusic.size() - 1 < 0 ){
-            music = pastMusic.get(0);
+        if ( pastMusic.size() == 0 ){
+            music = presentMusic;
         } else {
-            music = pastMusic.get(pastMusic.size() - 1);
+            if ( indexOfShuffleMusic < super.getMusics().size() ) {
+                music = pastMusic.get(pastMusic.size()-1 - indexOfShuffleMusic);
+                indexOfShuffleMusic++;
+            }
+            else {
+                indexOfShuffleMusic = 1;
+                music = pastMusic.get(pastMusic.size()-1 - indexOfShuffleMusic);
+            }
         }
         pastMusic.remove(music);
         return music;
@@ -274,8 +281,14 @@ public class MusicController extends MusicPlayer {
     private Music previousMusicBasedOnArrangement() {
         if ( indexOfMusic == 0 ){
             return super.getMusics().get(super.getMusics().size() - 1);
-        } else if ( indexOfMusic >= super.getMusics().size() ){
-            return super.getMusics().get(0);
+        }
+        else if ( indexOfMusic >= super.getMusics().size() ){
+            if ( super.getMusics().size() > 1) {
+                indexOfMusic = getMusics().size() - 2;
+            } else {
+                indexOfMusic = 0;
+            }
+            return super.getMusics().get(indexOfMusic);
         }
         else {
             indexOfMusic--;
@@ -327,6 +340,10 @@ public class MusicController extends MusicPlayer {
         repetitionState = JUSTTHIS;
     }
 
+    // based on percentage
+    private void calculatePart(int percentage) {
+
+    }
 //
 }
 

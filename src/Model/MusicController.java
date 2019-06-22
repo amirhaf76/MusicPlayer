@@ -17,10 +17,9 @@ public class MusicController extends MusicPlayer {
 
     // playing mode
     private CONTROL repetitionState = ONECE;
-    private boolean once = true;
     private boolean shuffle = false;
     private int indexOfMusic;
-    private ArrayList<Music> pastMusic;
+    private ArrayList<Music> pastMusic = new ArrayList<>();
 
     
     // player
@@ -39,16 +38,8 @@ public class MusicController extends MusicPlayer {
 
 
     public MusicController() throws IOException, JavaLayerException {
-
-        prepareMusic();
-
-        numberOfFrame = player.findNumbersOfFrame();
-
-        player.close(); // close player and buffer
-
-        prepareMusic(); // because player and buffer is closed
-        command = CONTROL.NOTSTARTED;
-        this.start();
+        command = NOTSTARTED;
+        start();
     }
 
 
@@ -60,29 +51,36 @@ public class MusicController extends MusicPlayer {
                 try {
 
                     while (command.equals(CONTROL.PLAYING)) {
-                        synchronized (lock) {
-                            if (!player.play(1)) {
-                                command = CONTROL.STOP;
-                                break; // finish music
-                            } else {
-                                numberOfFrame++;
-                            }
 
-                            synchronized (this) {
+                        if (!player.play(1)) {
+                            command = CONTROL.STOP;
+                            break; // finish music
+                        } else {
+                            numberOfFrame++;
+                        }
 
-                                switch (command) {
-                                    case PAUSE:
-                                        wait();
-                                        break;
+                        synchronized (this) {
 
-                                    case NEXT:
-                                    case PREVIOUS:
-                                    case STOP:
-                                        command = CONTROL.STOP;
-                                        player.close();
-                                        break;
-                                    default:
-                                }
+                            switch (command) {
+                                case PAUSE:
+                                    lastTime = player.getPosition();
+                                    wait();
+                                    break;
+
+                                case NEXT:
+                                    player.close();
+                                    notifyAll();
+                                    break;
+                                case PREVIOUS:
+                                    player.close();
+                                    notifyAll();
+                                    break;
+                                case STOP:
+                                    player.close();
+                                    break;
+                                case FIINISH:
+                                    player.close();
+                                default:
                             }
                         }
                     }
@@ -97,14 +95,32 @@ public class MusicController extends MusicPlayer {
 
         runPlayer.start(); // if song reach to the end, player close buffer
 
+        if ( command.equals(FIINISH) ) {
+            prepareMusic(presentMusic);
+            start();
+        }
+
     }
 
 
     public void start() throws IOException, JavaLayerException {
         synchronized (this) {
             switch (command) {
+                case FIINISH:
+                    if ( repetitionState.equals(JUSTTHIS) ) {
+                        command = PLAYING;
+                        prepareMusic(presentMusic);
+                        playMusic();
+                        break;
+                    }
                 case NOTSTARTED:
                     command = CONTROL.PLAYING;
+                    if (shuffle) {
+                        prepareMusic( nextMusicBasedOnShuffle() );
+                    } else {
+                        prepareMusic( nextMusicBasedOnArrangement());
+                    }
+
                     playMusic();
                     break;
 
@@ -128,32 +144,70 @@ public class MusicController extends MusicPlayer {
         }
     }
 
-    public void nextMusic(File musicFile) {
+    public void nextMusic(File musicFile) throws InterruptedException, IOException, JavaLayerException {
         synchronized (this) {
-            if (command.equals(CONTROL.PAUSE))
-                notifyAll();
-            command = CONTROL.NEXT;
+            command = NEXT;
+            wait();
+            prepareMusic(
+                    nextMusicBasedOnMode()
+            );
+            command = NOTSTARTED;
+            start();
         }
     }
 
-    public void previousMusic() {
+    public void previousMusic() throws InterruptedException, IOException, JavaLayerException {
         synchronized (this) {
-            if (command.equals(PAUSE)) {
-                notifyAll();
-            } else if (command.equals(STOP)) {
-            }
             command = PREVIOUS;
+            wait();
+            if (shuffle) {
+                prepareMusic( previousMusicBasedOnShuffle() );
+            } else {
+                prepareMusic( previousMusicBasedOnArrangement() );
+            }
+            this.start();
         }
     }
 
-    private void preparePreviousMusic() {
+    private Music nextMusicBasedOnMode() throws IOException, JavaLayerException {
 
+        switch (repetitionState) {
+            case ONECE:
+                if (shuffle) {
+                    if ( pastMusic.size() < super.getMusics().size() ) {
+                        return nextMusicBasedOnShuffle();
+                    } else {
+                        command = FIINISH;
+                    }
+                }
+                else {
+                    if ( indexOfMusic < super.getMusics().size() ) {
+                        return nextMusicBasedOnArrangement();
+                    }
+                    else {
+                        command = FIINISH;
+                    }
+                }
+                break;
+            case ALWAYS:
+                if (shuffle) {
+                    return nextMusicBasedOnShuffle();
+                } else {
+                    return nextMusicBasedOnArrangement();
+                }
+
+            default:
+        }
+        return presentMusic; // !!!!!!!
     }
 
-    private void prepareMusic() throws IOException, JavaLayerException {
+
+
+
+    private void prepareMusic(Music music) throws IOException, JavaLayerException { // totally
         synchronized (lock) {
-            // phase 1: find music
-            findMusic();
+            // save present music
+            presentMusic = music;
 
             // find number of frames
             buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
@@ -170,85 +224,59 @@ public class MusicController extends MusicPlayer {
 
     }
 
-    private void findMusic() {
+    private Music previousMusicBasedOnShuffle() {
+        Music music;
+        if ( pastMusic.size() - 1 < 0 ){
+            music = pastMusic.get(0);
+        } else {
+            music = pastMusic.get(pastMusic.size() - 1);
+        }
+        pastMusic.remove(music);
+        return music;
+    }
 
-        switch (repetitionState) {
-            case ALWAYS:
-                if ( shuffle ) { // shuffle == true
-                    if ( pastMusic.size() == super.getMusics().size() ){ // reload
-                        pastMusic.removeAll( pastMusic.subList(0, pastMusic.size()) );
-                    }
-                    else { // find next
-                        presentMusic = findMusicBasedOnShuffle();
-                    }
-
-                }
-                else { // shuffle == false
-                    if ( indexOfMusic < super.getMusics().size() ) { // find next
-                        presentMusic = super.getMusics().get(indexOfMusic);
-                        indexOfMusic++;
-                    }
-                    else { // reload
-                        indexOfMusic = 0;
-                        presentMusic = super.getMusics().get(indexOfMusic);
-                    }
-                }
-
-                break;
-            case ONECE:
-                if ( shuffle ) { // shuffle == true
-                    if ( once ){ // do it once
-                        pastMusic.removeAll( pastMusic.subList(0, pastMusic.size()) );
-                        once = false;
-                    } else { // continue
-                        if ( pastMusic.size() <= super.getMusics().size() ){
-                            presentMusic = findMusicBasedOnShuffle();
-                        } else {
-                            this.stopMusic();
-                        }
-                    }
-
-                } else { // shuffle == false
-                    if ( once ) { // do it once
-                        if ( !(indexOfMusic < super.getMusics().size()) ) {
-                            indexOfMusic = 0;
-                            presentMusic = super.getMusics().get(indexOfMusic);
-                            once = false;
-                        }
-                    }
-                    if ( indexOfMusic < super.getMusics().size() ) {
-                        presentMusic = super.getMusics().get(indexOfMusic);
-                        indexOfMusic++;
-                    } else {
-                        this.stopMusic();
-                    }
-
-                }
-
-                break;
-            case JUSTTHIS:
-                // it doesn't do anything because the present music have to play
-                break;
-                default:
-
+    private Music previousMusicBasedOnArrangement() {
+        if ( indexOfMusic == 0 || indexOfMusic >= super.getMusics().size() ){
+            return super.getMusics().get(super.getMusics().size() - 1);
+        } else {
+            indexOfMusic--;
+            return super.getMusics().get(indexOfMusic);
         }
     }
 
-    private Music findMusicBasedOnShuffle() {
+
+
+
+    private Music nextMusicBasedOnShuffle() {
         Random random = new Random(getMusics().size());
 
-        if ( pastMusic.size() < super.getMusics().size() ) {
-            while (true) {
-                Music tempMusic = super.getMusics().get(random.nextInt());
-                if ( !pastMusic.contains(tempMusic) ){
-                    pastMusic.add(tempMusic);
-                    return tempMusic;
-                }
+        if ( !(pastMusic.size() < super.getMusics().size()) ) {
+            pastMusic.removeAll(super.getMusics().subList(0,super.getMusics().size()));
+        }
+        while (true) {
+            Music tempMusic = super.getMusics().get(random.nextInt());
+            if ( !pastMusic.contains(tempMusic) ){
+                pastMusic.add(tempMusic);
+                return tempMusic;
             }
         }
-        return presentMusic; // !!!!!!!!!
+
     }
 
+
+
+    private Music nextMusicBasedOnArrangement() {
+        Music music;
+
+        if ( (indexOfMusic < super.getMusics().size()) ) {
+            indexOfMusic = 0;
+        }
+
+        music = super.getMusics().get(indexOfMusic);
+        indexOfMusic++;
+        return music;
+
+    }
 
 }
 

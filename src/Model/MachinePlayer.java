@@ -19,7 +19,7 @@ public class MachinePlayer extends Player {
     }
 
 
-    public void skipMusic(long offset) throws JavaLayerException {
+    public void skipMusic(int offset) throws JavaLayerException {
         boolean repeat = true;
         while (offset-- > 0 && repeat ) {
             repeat = skipFrame();
@@ -39,16 +39,18 @@ public class MachinePlayer extends Player {
     public long findNumbersOfFrame() throws JavaLayerException {
 
         boolean ret = true;
-        long size = 0;
+        int size = 0;
 
         while ( ret ) {
 
             ret = skipFrame();
             size++;
+
         }
 
         return size;
     }
+
 
 
 }

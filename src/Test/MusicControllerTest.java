@@ -44,17 +44,20 @@ class MusicControllerTest {
         assertTrue(musicController.getMusics().contains(music2));
     }
 
+
     @Test
     void testPlaying() throws IOException, JavaLayerException, InterruptedException {
 
         System.out.println(musicController.getMusics().get(0).getFrames());
         musicController.start();
+        System.out.println("start");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.stop();
+        System.out.println("stop");
 
         try {
             Thread.sleep(5000);
@@ -63,57 +66,82 @@ class MusicControllerTest {
         }
 
         musicController.start();
+        System.out.println("start");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.pause();
+        System.out.println("pause");
+
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.start();
+        System.out.println("start");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.nextMusic();
+        System.out.println("nextMusic");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.previousMusic();
+        System.out.println("previousMusic");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.previousMusic();
+        System.out.println("previousMusic");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.nextMusic();
+        System.out.println("nextMusic");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         musicController.nextMusic();
+        System.out.println("nextMusic");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        musicController.skipMusic(50);
+        System.out.println("skipMusic");
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        musicController.skipMusic(10);
+        System.out.println("skipMusic");
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
-//    @Test
-//    void main() throws InvalidDataException, IOException, UnsupportedTagException, JavaLayerException, InterruptedException {
-//        testPlaying();
-//    }
+
 }

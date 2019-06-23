@@ -24,29 +24,25 @@ public class MachinePlayer extends Player {
         }
     }
 
+    private boolean skipFrame() throws JavaLayerException {
+        Header h = bitstream.readFrame();
+        if (h == null) return false;
+        bitstream.closeFrame();
+        return true;
+    }
 
+    // doesn't need this
     public long findNumbersOfFrame() throws JavaLayerException {
 
         boolean ret = true;
         int size = 0;
 
         while ( ret ) {
-
             ret = skipFrame();
             size++;
-
         }
 
         return size;
-    }
-
-    private boolean skipFrame() throws JavaLayerException
-    {
-        Header h = bitstream.readFrame();
-        if (h == null) return false;
-        bitstream.closeFrame();
-        return true;
-
     }
 
 

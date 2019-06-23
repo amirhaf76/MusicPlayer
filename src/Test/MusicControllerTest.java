@@ -2,18 +2,14 @@ package Test;
 
 import Model.Music;
 import Model.MusicController;
-import Model.MusicPlayer;
 import javazoom.jl.decoder.JavaLayerException;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,6 +18,8 @@ class MusicControllerTest {
 
     private static Music music1;
     private static Music music2;
+    private static Music music3;
+    private static Music music4;
     private static MusicController musicController;
 
     static void setUp() throws InvalidDataException, IOException, UnsupportedTagException {
@@ -32,9 +30,16 @@ class MusicControllerTest {
                 new Time(System.currentTimeMillis()));
         music1 = new Music(new File(parent + "Sham Pain - Five Finger Death Punch.mp3"),
                 new Time(System.currentTimeMillis()));
+        music3 = new Music(new File(parent + "Natural - Imagine Dragons.mp3"),
+                new Time(System.currentTimeMillis()));
+        music4 = new Music(new File(parent + "Homemade Dynamite Remix - Lorde.mp3"),
+                new Time(System.currentTimeMillis()));
+
 
         musicController.addMusic(music1);
         musicController.addMusic(music2);
+        musicController.addMusic(music3);
+        musicController.addMusic(music4);
 
     }
 
@@ -43,6 +48,8 @@ class MusicControllerTest {
         setUp();
         assertTrue(musicController.getMusics().contains(music1));
         assertTrue(musicController.getMusics().contains(music2));
+        assertTrue(musicController.getMusics().contains(music3));
+        assertTrue(musicController.getMusics().contains(music4));
     }
 
 
@@ -159,6 +166,93 @@ class MusicControllerTest {
 
     }
 
+    @Test
+    void nextMusic() throws InvalidDataException, IOException, UnsupportedTagException, JavaLayerException, InterruptedException {
+        setUp();
+        musicController.repeatAlways();
+        musicController.start();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    void once() throws InvalidDataException, IOException, UnsupportedTagException, JavaLayerException, InterruptedException {
+        setUp();
+        musicController.repeatOnce();
+        musicController.start();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("nextMusic");
+        musicController.nextMusic();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        musicController.skipMusic(90);
+
+        try {
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

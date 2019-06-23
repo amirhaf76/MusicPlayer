@@ -40,16 +40,16 @@ class MediaTest {
     }
 
     @Test
-    @DisplayName("setTime")
+    @DisplayName("setAddedTime")
     void setTime() {
         time = new Time(System.currentTimeMillis());
-        media.setTime(time);
-        assertEquals(time, media.getTime());
+        media.setAddedTime(time);
+        assertEquals(time, media.getAddedTime());
     }
 
     @Test
-    @DisplayName("getTime")
+    @DisplayName("getAddedTime")
     void getTime() {
-        assertEquals(time, media.getTime());
+        assertEquals(time, media.getAddedTime());
     }
 }

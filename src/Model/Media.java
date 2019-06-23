@@ -5,25 +5,25 @@ import java.sql.Time;
 
 public class Media {
     private final File mediaFile;
-    private Time time;
+    private Time addedTime;
 
     // TODO: 6/20/2019 SimpleDataFormat
 
-    public Media(File mediaFile, Time time) {
+    public Media(File mediaFile, Time addedTime) {
         this.mediaFile = mediaFile;
-        this.time = time;
+        this.addedTime = addedTime;
     }
 
     public File getMediaFile() {
         return mediaFile;
     }
 
-    public Time getTime() {
-        return time;
+    public Time getAddedTime() {
+        return addedTime;
     }
 
-    public void setTime(Time time) {
-        this.time = time;
+    public void setAddedTime(Time addedTime) {
+        this.addedTime = addedTime;
     }
 
 

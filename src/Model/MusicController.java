@@ -1,6 +1,8 @@
 package Model;
 
 import javazoom.jl.decoder.JavaLayerException;
+import mp3agic.InvalidDataException;
+import mp3agic.UnsupportedTagException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -95,9 +97,8 @@ public class MusicController extends MusicPlayer {
                         }
                     }
 
-                } catch (JavaLayerException | InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                } catch (JavaLayerException | InterruptedException |
+                        IOException | InvalidDataException | UnsupportedTagException e) {
                     e.printStackTrace();
                 }
             }
@@ -110,7 +111,7 @@ public class MusicController extends MusicPlayer {
     }
 
 
-    public void start() throws IOException, JavaLayerException {
+    public void start() throws IOException, JavaLayerException, InvalidDataException, UnsupportedTagException {
         synchronized (lock) {
             switch (command) {
                 case PAUSE:
@@ -132,17 +133,6 @@ public class MusicController extends MusicPlayer {
                 case NOTSTARTED:
 
                     command = PLAYING;
-
-                    // for just this mode
-                    if ( repetitionState.equals(JUSTTHIS) ) {
-                        if ( presentMusic == null ) {
-                            prepareMusic(super.getMusics().get(0));
-                        } else {
-                            prepareMusic(presentMusic);
-                        }
-                        playMusic();
-                        break;
-                    }
 
                     // next music base on mode
                     prepareMusic(nextMusicBasedOnMode());
@@ -171,7 +161,7 @@ public class MusicController extends MusicPlayer {
         }
     }
 
-    public void nextMusic() throws IOException, JavaLayerException, InterruptedException {
+    public void nextMusic() throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
         synchronized (lock) {
             command = NEXT;
 
@@ -186,7 +176,7 @@ public class MusicController extends MusicPlayer {
         }
     }
 
-    public void previousMusic() throws InterruptedException, IOException, JavaLayerException {
+    public void previousMusic() throws InterruptedException, IOException, JavaLayerException, InvalidDataException, UnsupportedTagException {
         synchronized (lock) {
             command = PREVIOUS;
             lock.wait();
@@ -201,11 +191,85 @@ public class MusicController extends MusicPlayer {
         }
     }
 
+    public void repeatOnce() {
+        repetitionState = ONCE;
+    }
+
+    public void repeatAlways() {
+        repetitionState = ALWAYS;
+    }
+
+    public void justThis() {
+        repetitionState = JUSTTHIS;
+    }
+
+    public void shuffle() {
+        shuffle = !shuffle;
+    }
+
+    public boolean isShuffle() {
+        return shuffle;
+    }
+
+    public Repetition getRepetitionState() {
+        return repetitionState;
+    }
+
+    // based on percentage
+    public void skipMusic(int percentage) throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
+        if ( percentage >= 0 && percentage <= 100) {
+
+            // calculate frame number
+            int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
+
+            Control lastCommand = command;
+            synchronized (lock) {
+
+                command = SKIP;
+                lock.wait();
+
+                // prepare music again
+                prepareMusic(presentMusic);
+
+                // skip frames
+                lastFrame = frameNumber;
+                player.skipMusicBasedOnFrame(frameNumber);
+
+                command = PLAYING;
+
+                playMusic();
+            }
+            // mode of player
+            if ( lastCommand.equals(PAUSE) ) {
+                pause();
+            }
+        }
+    }
+
+    public long calculateLastTime() {
+        return (lastFrame * presentMusic.getTime())/ presentMusic.getFrames();
+    }
+
+
+    private void prepareMusic(Music music) throws IOException, JavaLayerException, InvalidDataException, UnsupportedTagException { // totally
+        synchronized (lock) {
+            // save present music
+            presentMusic = music;
+
+            lastFrame = 0;
+
+            BufferedInputStream buffer = new BufferedInputStream(
+                    new FileInputStream(presentMusic.getMediaFile()));
+            player = new MachinePlayer(buffer);
+        }
+
+    }
+
     private Music nextMusicBasedOnMode() {
 
         switch (repetitionState) {
             case ONCE:
-                System.out.println("once");
+//                System.out.println("once");
                 if (shuffle) {
                     if ( pastMusic.size() < super.getMusics().size() ) {
                         return nextMusicBasedOnShuffle();
@@ -214,18 +278,21 @@ public class MusicController extends MusicPlayer {
                     }
                 }
                 else {
+                    // when player go next music in nextMusicBasedOnArrangement
+                    // in last music indexOfMusic equals with once more than
+                    // size of musics in list of MusicPlayer
                     if ( indexOfMusic < super.getMusics().size() ) {
-                        System.out.println("once next");
+//                        System.out.println("once next");
                         return nextMusicBasedOnArrangement();
                     }
                     else {
-                        System.out.println("once: end");
+//                        System.out.println("once: end");
                         command = FINISH;
                     }
                 }
                 break;
             case ALWAYS:
-                System.out.println("always");
+//                System.out.println("always");
                 if (shuffle) {
                     return nextMusicBasedOnShuffle();
                 } else {
@@ -243,30 +310,38 @@ public class MusicController extends MusicPlayer {
     }
 
 
+    private Music nextMusicBasedOnShuffle() {
+        Random random = new Random(getMusics().size());
 
-
-    private void prepareMusic(Music music) throws IOException, JavaLayerException { // totally
-        synchronized (lock) {
-            // save present music
-            presentMusic = music;
-
-            lastFrame = 0;
-
-
-//            // find number of frames
-//            buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
-//            player = new MachinePlayer(buffer);
-//
-//            numberOfFrame = player.findNumbersOfFrame();
-//
-//            player.close(); // close player and buffer
-
-            // prepare for playing
-            BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
-            player = new MachinePlayer(buffer);
+        if ( !(pastMusic.size() < super.getMusics().size()) ) {
+            pastMusic.removeAll(super.getMusics().subList(0,super.getMusics().size()));
+        }
+        while (true) {
+            Music tempMusic = super.getMusics().get(random.nextInt());
+            if ( !pastMusic.contains(tempMusic) ){
+                pastMusic.add(tempMusic);
+                return tempMusic;
+            }
         }
 
     }
+
+
+
+    private Music nextMusicBasedOnArrangement() {
+        Music music;
+
+        if ( !(indexOfMusic < super.getMusics().size()) ) {
+            indexOfMusic = 0;
+        }
+
+        music = super.getMusics().get(indexOfMusic);
+        indexOfMusic++;
+        return music;
+
+    }
+
+
 
     private Music previousMusicBasedOnShuffle() {
         Music music;
@@ -306,99 +381,6 @@ public class MusicController extends MusicPlayer {
 
 
 
-
-    private Music nextMusicBasedOnShuffle() {
-        Random random = new Random(getMusics().size());
-
-        if ( !(pastMusic.size() < super.getMusics().size()) ) {
-            pastMusic.removeAll(super.getMusics().subList(0,super.getMusics().size()));
-        }
-        while (true) {
-            Music tempMusic = super.getMusics().get(random.nextInt());
-            if ( !pastMusic.contains(tempMusic) ){
-                pastMusic.add(tempMusic);
-                return tempMusic;
-            }
-        }
-
-    }
-
-
-
-    private Music nextMusicBasedOnArrangement() {
-        Music music;
-
-        if ( !(indexOfMusic < super.getMusics().size()) ) {
-            indexOfMusic = 0;
-        }
-
-        music = super.getMusics().get(indexOfMusic);
-        indexOfMusic++;
-        return music;
-
-    }
-
-    public void repeatOnce() {
-        repetitionState = ONCE;
-    }
-    public void repeatAlways() {
-        repetitionState = ALWAYS;
-    }
-    public void justThis() {
-        repetitionState = JUSTTHIS;
-    }
-
-    public void shuffle() {
-        shuffle = !shuffle;
-    }
-
-    public boolean isShuffle() {
-        return shuffle;
-    }
-
-    public Repetition getRepetitionState() {
-        return repetitionState;
-    }
-
-    // based on percentage
-    public void skipMusic(int percentage) throws IOException, JavaLayerException, InterruptedException {
-        if ( percentage >= 0 && percentage <= 100) {
-
-            // calculate frame number
-            int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
-
-            Control lastCommand = command;
-            synchronized (lock) {
-
-                command = SKIP;
-                lock.wait();
-
-                // prepare music again
-                prepareMusic(presentMusic);
-
-                // skip frames
-                lastFrame = frameNumber;
-                player.skipMusicBasedOnFrame(frameNumber);
-
-                command = PLAYING;
-
-                playMusic();
-            }
-            // mode of player
-            if ( lastCommand.equals(PAUSE) ) {
-                pause();
-            }
-        }
-    }
-
-    private long calculateLastTime() {
-        return (lastFrame * presentMusic.getTime())/ presentMusic.getFrames();
-    }
-
-
-    private void chooseJustThis() {
-
-    }
 
 }
 

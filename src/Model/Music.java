@@ -21,11 +21,12 @@ public class Music extends Media {
     private long time = 0;
 
 
-    public Music(File mediaFile, Time time) {
+    public Music(File mediaFile, Time time) throws InvalidDataException, IOException, UnsupportedTagException {
         super(mediaFile, time);
+        loadMusic();
     }
 
-    public void loadMusic() throws InvalidDataException, IOException, UnsupportedTagException {
+    private void loadMusic() throws InvalidDataException, IOException, UnsupportedTagException {
         this.getID3v1();
         this.getID3v2();
         imageAlbum = getArtWork();

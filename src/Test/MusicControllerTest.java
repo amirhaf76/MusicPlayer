@@ -23,7 +23,7 @@ class MusicControllerTest {
     private static Music music1;
     private static Music music2;
     private static MusicController musicController;
-    @BeforeAll
+
     static void setUp() throws InvalidDataException, IOException, UnsupportedTagException {
         String parent  = "I:\\Amir.haf76's Files\\Univercity\\ProjectOfJava\\src\\Test\\FileOfTest\\";
         musicController = new MusicController();
@@ -39,15 +39,16 @@ class MusicControllerTest {
     }
 
     @Test
-    void addMusic() {
+    void addMusic() throws InvalidDataException, IOException, UnsupportedTagException {
+        setUp();
         assertTrue(musicController.getMusics().contains(music1));
         assertTrue(musicController.getMusics().contains(music2));
     }
 
 
     @Test
-    void testPlaying() throws IOException, JavaLayerException, InterruptedException {
-
+    void testPlaying() throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
+        setUp();
         System.out.println(musicController.getMusics().get(0).getFrames());
         musicController.start();
         System.out.println("start");
@@ -142,6 +143,22 @@ class MusicControllerTest {
         }
 
     }
+
+    @Test
+    void justThis() throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
+        setUp();
+        musicController.justThis();
+        musicController.start();
+
+        Thread.sleep(5000);
+
+        musicController.skipMusic(90);
+        System.out.println("please wait for 1 minutes");
+        Thread.sleep(60000);
+        System.out.println("done");
+
+    }
+
 
 
 }

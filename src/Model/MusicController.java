@@ -26,9 +26,8 @@ public class MusicController extends MusicPlayer {
     private MachinePlayer player;
 
     // frames and time
-    private long numberOfFrame;
-    private long totoalTime;
-    private int lastTime = 0;
+//    private long numberOfFrame;
+    private int lastFrame = 0;
 
 
     private final Object lock = new Object(); // make player lock
@@ -53,42 +52,46 @@ public class MusicController extends MusicPlayer {
                     while (command.equals(CONTROL.PLAYING)) {
 
                         if (!player.play(1)) {
-                            command = FIINISH;
+                            command = FINISH;
                             break; // finish music
                         } else {
-
-                            numberOfFrame++;
+                            lastFrame++;
                         }
 
                         synchronized (lock) {
 
                             switch (command) {
                                 case PAUSE:
-                                    System.out.println(command);
-                                    lastTime = player.getPosition();
+//                                    System.out.println(command);
                                     lock.wait();
                                     break;
 
+                                case SKIP:
+//                                    System.out.println(command);
+                                    player.close();
+                                    lock.notify();
+                                    break;
+
                                 case NEXT:
-                                    System.out.println(command);
+//                                    System.out.println(command);
                                     player.close();
 
                                     lock.notify();
                                     break;
                                 case PREVIOUS:
-                                    System.out.println(command);
+//                                    System.out.println(command);
                                     player.close();
                                     lock.notifyAll();
                                     break;
                                 case STOP:
-                                    System.out.println(command);
+//                                    System.out.println(command);
                                     player.close();
                                     break;
-                                case FIINISH:
-                                    System.out.println(command);
+                                case FINISH:
+//                                    System.out.println(command);
                                     player.close();
                                 default:
-                                    System.out.println(command);
+//                                    System.out.println(command);
                             }
 
                         }
@@ -106,7 +109,7 @@ public class MusicController extends MusicPlayer {
         runPlayer.start(); // if song reach to the end, player close buffer
 
 
-        if ( command.equals(FIINISH) ) {
+        if ( command.equals(FINISH) ) {
             System.out.println("noooooooooooooooootiiiiiiiiiiiiiiiiiiiiiiiiiiic");
             prepareMusic(presentMusic);
             start();
@@ -128,7 +131,7 @@ public class MusicController extends MusicPlayer {
                     playMusic();
                     break;
 
-                case FIINISH:
+                case FINISH:
                 case NOTSTARTED:
 
                     command = PLAYING;
@@ -211,7 +214,7 @@ public class MusicController extends MusicPlayer {
                     if ( pastMusic.size() < super.getMusics().size() ) {
                         return nextMusicBasedOnShuffle();
                     } else {
-                        command = FIINISH;
+                        command = FINISH;
                     }
                 }
                 else {
@@ -219,7 +222,7 @@ public class MusicController extends MusicPlayer {
                         return nextMusicBasedOnArrangement();
                     }
                     else {
-                        command = FIINISH;
+                        command = FINISH;
                     }
                 }
                 break;
@@ -243,15 +246,16 @@ public class MusicController extends MusicPlayer {
             // save present music
             presentMusic = music;
 
-            // find number of frames
-            buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
-            player = new MachinePlayer(buffer);
+            lastFrame = 0;
 
-            numberOfFrame = player.findNumbersOfFrame();
 
-            totoalTime = player.getPosition();
-            System.out.println(numberOfFrame);
-            player.close(); // close player and buffer
+//            // find number of frames
+//            buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
+//            player = new MachinePlayer(buffer);
+//
+//            numberOfFrame = player.findNumbersOfFrame();
+//
+//            player.close(); // close player and buffer
 
             // prepare for playing
             buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
@@ -341,10 +345,41 @@ public class MusicController extends MusicPlayer {
     }
 
     // based on percentage
-    private void calculatePart(int percentage) {
+    public void skipMusic(int percentage) throws IOException, JavaLayerException, InterruptedException {
+        if ( percentage >= 0 && percentage <= 100) {
 
+            // calculate frame number
+            int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
+
+            CONTROL lastCommand = command;
+            synchronized (lock) {
+
+                command = SKIP;
+                lock.wait();
+
+                // prepare music again
+                prepareMusic(presentMusic);
+
+                // skip frames
+                lastFrame = frameNumber;
+                player.skipMusicBasedOnFrame(frameNumber);
+
+                command = PLAYING;
+
+                playMusic();
+            }
+            // mode of player
+            if ( lastCommand.equals(PAUSE) ) {
+                pause();
+            }
+        }
     }
-//
+
+    private long calculateLastTime() {
+        return (lastFrame * presentMusic.getTime())/ presentMusic.getFrames();
+    }
+
+
 }
 
 

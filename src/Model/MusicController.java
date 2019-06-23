@@ -16,8 +16,8 @@ public class MusicController extends MusicPlayer {
 
     // playing mode
     private static int indexOfShuffleMusic = 1;
-    private CONTROL repetitionState = ONECE;
-    private boolean shuffle = false;
+    private static CONTROL repetitionState = ONECE;
+    private static boolean shuffle = false;
     private int indexOfMusic = 0;
     private ArrayList<Music> pastMusic = new ArrayList<>();
 
@@ -26,7 +26,6 @@ public class MusicController extends MusicPlayer {
     private MachinePlayer player;
 
     // frames and time
-//    private long numberOfFrame;
     private int lastFrame = 0;
 
 
@@ -42,7 +41,7 @@ public class MusicController extends MusicPlayer {
     }
 
 
-    private void playMusic() throws IOException, JavaLayerException {
+    private void playMusic() {
 
         Thread runPlayer = new Thread(new Runnable() {
             @Override
@@ -53,7 +52,10 @@ public class MusicController extends MusicPlayer {
 
                         if (!player.play(1)) {
                             command = FINISH;
-                            break; // finish music
+//                            System.out.println(command);
+                            player.close();
+                            start();
+                            break;
                         } else {
                             lastFrame++;
                         }
@@ -99,6 +101,8 @@ public class MusicController extends MusicPlayer {
 
                 } catch (JavaLayerException | InterruptedException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }, "Music player");
@@ -107,13 +111,6 @@ public class MusicController extends MusicPlayer {
 
 
         runPlayer.start(); // if song reach to the end, player close buffer
-
-
-        if ( command.equals(FINISH) ) {
-            System.out.println("noooooooooooooooootiiiiiiiiiiiiiiiiiiiiiiiiiiic");
-            prepareMusic(presentMusic);
-            start();
-        }
 
     }
 
@@ -137,7 +134,11 @@ public class MusicController extends MusicPlayer {
                     command = PLAYING;
 
                     if ( repetitionState.equals(JUSTTHIS) ) {
-                        prepareMusic(presentMusic);
+                        if ( presentMusic == null ) {
+                            prepareMusic(super.getMusics().get(0));
+                        } else {
+                            prepareMusic(presentMusic);
+                        }
                         playMusic();
                         break;
                     }
@@ -380,7 +381,12 @@ public class MusicController extends MusicPlayer {
     }
 
 
+    private void chooseJustThis() {
+
+    }
+
 }
+
 
 
 

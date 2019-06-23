@@ -6,21 +6,20 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static Model.CONTROL.*;
+import static Model.Control.*;
+import static Model.Repetition.*;
 
 public class MusicController extends MusicPlayer {
 
     // file
     private Music presentMusic;
-    private BufferedInputStream buffer;
 
     // playing mode
-    private static int indexOfShuffleMusic = 1;
-    private static CONTROL repetitionState = ONECE;
-    private static boolean shuffle = false;
+    private int indexOfShuffleMusic = 1;
+    private Repetition repetitionState = ONCE;
+    private boolean shuffle = false;
     private int indexOfMusic = 0;
     private ArrayList<Music> pastMusic = new ArrayList<>();
-
 
     // player
     private MachinePlayer player;
@@ -28,14 +27,12 @@ public class MusicController extends MusicPlayer {
     // frames and time
     private int lastFrame = 0;
 
-
+    // controlling
     private final Object lock = new Object(); // make player lock
-
-    private CONTROL command;
-
+    private Control command;
 
 
-
+    // constructor
     public MusicController() {
         command = NOTSTARTED;
     }
@@ -48,7 +45,7 @@ public class MusicController extends MusicPlayer {
             public void run() {
                 try {
 
-                    while (command.equals(CONTROL.PLAYING)) {
+                    while (command.equals(Control.PLAYING)) {
 
                         if (!player.play(1)) {
                             command = FINISH;
@@ -77,13 +74,12 @@ public class MusicController extends MusicPlayer {
                                 case NEXT:
 //                                    System.out.println(command);
                                     player.close();
-
                                     lock.notify();
                                     break;
                                 case PREVIOUS:
 //                                    System.out.println(command);
                                     player.close();
-                                    lock.notifyAll();
+                                    lock.notify();
                                     break;
                                 case STOP:
 //                                    System.out.println(command);
@@ -109,7 +105,6 @@ public class MusicController extends MusicPlayer {
 //        runPlayer.setDaemon(true);
         runPlayer.setPriority(Thread.MAX_PRIORITY);
 
-
         runPlayer.start(); // if song reach to the end, player close buffer
 
     }
@@ -122,9 +117,14 @@ public class MusicController extends MusicPlayer {
                     command = PLAYING;
                     lock.notifyAll();
                     break;
+
                 case STOP:
                     command = PLAYING;
-                    prepareMusic(presentMusic);
+                    if ( presentMusic == null ) {
+                        prepareMusic(super.getMusics().get(0));
+                    } else {
+                        prepareMusic(presentMusic);
+                    }
                     playMusic();
                     break;
 
@@ -133,6 +133,7 @@ public class MusicController extends MusicPlayer {
 
                     command = PLAYING;
 
+                    // for just this mode
                     if ( repetitionState.equals(JUSTTHIS) ) {
                         if ( presentMusic == null ) {
                             prepareMusic(super.getMusics().get(0));
@@ -143,6 +144,7 @@ public class MusicController extends MusicPlayer {
                         break;
                     }
 
+                    // next music base on mode
                     prepareMusic(nextMusicBasedOnMode());
                     playMusic();
                     break;
@@ -162,9 +164,9 @@ public class MusicController extends MusicPlayer {
 
     public void stop() {
         synchronized (lock) {
-            if (command.equals(CONTROL.PLAYING) ||
-                    command.equals(CONTROL.PAUSE)) {
-                command = CONTROL.STOP;
+            if (command.equals(Control.PLAYING) ||
+                    command.equals(Control.PAUSE)) {
+                command = Control.STOP;
             }
         }
     }
@@ -172,7 +174,6 @@ public class MusicController extends MusicPlayer {
     public void nextMusic() throws IOException, JavaLayerException, InterruptedException {
         synchronized (lock) {
             command = NEXT;
-
 
             lock.wait();
             prepareMusic(
@@ -203,7 +204,7 @@ public class MusicController extends MusicPlayer {
     private Music nextMusicBasedOnMode() {
 
         switch (repetitionState) {
-            case ONECE:
+            case ONCE:
                 System.out.println("once");
                 if (shuffle) {
                     if ( pastMusic.size() < super.getMusics().size() ) {
@@ -231,9 +232,14 @@ public class MusicController extends MusicPlayer {
                     return nextMusicBasedOnArrangement();
                 }
 
-            default:
+            case JUSTTHIS:
+                if ( presentMusic == null ) {
+                    return super.getMusics().get(0);
+                } else {
+                    return presentMusic;
+                }
         }
-        return presentMusic; // !!!!!!!
+        return presentMusic; // !!!!!
     }
 
 
@@ -256,7 +262,7 @@ public class MusicController extends MusicPlayer {
 //            player.close(); // close player and buffer
 
             // prepare for playing
-            buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
+            BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(presentMusic.getMediaFile()));
             player = new MachinePlayer(buffer);
         }
 
@@ -333,13 +339,25 @@ public class MusicController extends MusicPlayer {
     }
 
     public void repeatOnce() {
-        repetitionState = ONECE;
+        repetitionState = ONCE;
     }
     public void repeatAlways() {
         repetitionState = ALWAYS;
     }
     public void justThis() {
         repetitionState = JUSTTHIS;
+    }
+
+    public void shuffle() {
+        shuffle = !shuffle;
+    }
+
+    public boolean isShuffle() {
+        return shuffle;
+    }
+
+    public Repetition getRepetitionState() {
+        return repetitionState;
     }
 
     // based on percentage
@@ -349,7 +367,7 @@ public class MusicController extends MusicPlayer {
             // calculate frame number
             int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
 
-            CONTROL lastCommand = command;
+            Control lastCommand = command;
             synchronized (lock) {
 
                 command = SKIP;

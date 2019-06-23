@@ -8,8 +8,7 @@ import java.util.Objects;
 
 public class Music extends Media {
 
-//    private final File mediaFile;
-
+    private boolean loaded = false;
     private String title = "<nothing>";
     private String artist = "<nothing>";
     private String album = "<nothing>";
@@ -22,14 +21,66 @@ public class Music extends Media {
     private long time = 0;
 
 
-    public Music(File mediaFile, Time time) throws IOException, InvalidDataException, UnsupportedTagException {
+    public Music(File mediaFile, Time time) {
         super(mediaFile, time);
+    }
+
+    public void loadMusic() throws InvalidDataException, IOException, UnsupportedTagException {
         this.getID3v1();
         this.getID3v2();
         imageAlbum = getArtWork();
+        loaded = true;
     }
 
-    private void getID3v1_2() throws IOException, InvalidDataException, UnsupportedTagException {
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public byte[] getImageAlbum() {
+        return imageAlbum;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getTrack() {
+        return track;
+    }
+
+    public int getGenre() {
+        return genre;
+    }
+
+    public int getFrames() {
+        return frames;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+
+
+
+
+    private void getID3v1_2() throws IOException {
 
         byte[] buffer = new byte[125];
         RandomAccessFile file = new RandomAccessFile(super.getMediaFile(), "r");
@@ -90,46 +141,6 @@ public class Music extends Media {
         }
 
         return new byte[0];
-    }
-
-    public byte[] getImageAlbum() {
-        return imageAlbum;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public String getAlbum() {
-        return album;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public String getTrack() {
-        return track;
-    }
-
-    public int getGenre() {
-        return genre;
-    }
-
-    public int getFrames() {
-        return frames;
-    }
-
-    public long getTime() {
-        return time;
     }
 
     @Override

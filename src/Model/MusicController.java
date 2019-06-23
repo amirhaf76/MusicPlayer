@@ -21,7 +21,7 @@ public class MusicController extends MusicPlayer {
     private int indexOfMusic = 0;
     private ArrayList<Music> pastMusic = new ArrayList<>();
 
-    
+
     // player
     private MachinePlayer player;
 
@@ -32,7 +32,7 @@ public class MusicController extends MusicPlayer {
     private final Object lock = new Object(); // make player lock
 
     private CONTROL command;
-    
+
 
 
 
@@ -143,11 +143,7 @@ public class MusicController extends MusicPlayer {
                         break;
                     }
 
-                    if (shuffle) {
-                        prepareMusic( nextMusicBasedOnShuffle() );
-                    } else {
-                        prepareMusic( nextMusicBasedOnArrangement());
-                    }
+                    prepareMusic(nextMusicBasedOnMode());
                     playMusic();
                     break;
 
@@ -173,15 +169,12 @@ public class MusicController extends MusicPlayer {
         }
     }
 
-    public void nextMusic() throws IOException, JavaLayerException {
+    public void nextMusic() throws IOException, JavaLayerException, InterruptedException {
         synchronized (lock) {
             command = NEXT;
 
-            try {
-                lock.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            lock.wait();
             prepareMusic(
                     nextMusicBasedOnMode()
             );
@@ -211,6 +204,7 @@ public class MusicController extends MusicPlayer {
 
         switch (repetitionState) {
             case ONECE:
+                System.out.println("once");
                 if (shuffle) {
                     if ( pastMusic.size() < super.getMusics().size() ) {
                         return nextMusicBasedOnShuffle();
@@ -220,14 +214,17 @@ public class MusicController extends MusicPlayer {
                 }
                 else {
                     if ( indexOfMusic < super.getMusics().size() ) {
+                        System.out.println("once next");
                         return nextMusicBasedOnArrangement();
                     }
                     else {
+                        System.out.println("once: end");
                         command = FINISH;
                     }
                 }
                 break;
             case ALWAYS:
+                System.out.println("always");
                 if (shuffle) {
                     return nextMusicBasedOnShuffle();
                 } else {
@@ -335,10 +332,10 @@ public class MusicController extends MusicPlayer {
 
     }
 
-    public void reapeatOnce() {
+    public void repeatOnce() {
         repetitionState = ONECE;
     }
-    public void reapeatAlways() {
+    public void repeatAlways() {
         repetitionState = ALWAYS;
     }
     public void justThis() {

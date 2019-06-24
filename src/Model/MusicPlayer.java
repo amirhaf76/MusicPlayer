@@ -6,13 +6,12 @@ public class MusicPlayer {
 
     private ArrayList<Music> musics = new ArrayList<>();
 
-
+    // TODO: 6/24/2019 add lock to for adding and removing music
     public void addMusic(Media media) {
-//        System.out.println(media);
+
         if ( media instanceof Music ) { // if media is Music, ...
-//            System.out.println(media);
+
             if ( !musics.contains(media) ) { // if there is not any music like media, ...
-//                System.out.println(media);
                 musics.add((Music) media);
             }
         }

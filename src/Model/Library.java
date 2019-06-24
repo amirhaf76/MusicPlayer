@@ -4,14 +4,17 @@ import Model.SortsClass.SortByAlbum;
 import Model.SortsClass.SortByArtist;
 import Model.SortsClass.SortByRecently;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Library {
+public class Library implements Serializable {
 
     private ArrayList<Media> medium = new ArrayList<>();
     private final List FAVORITES = new List("Favorites");
     private final List SHRAEDLIST = new List("Shared List");
     private ArrayList<List> playList = new ArrayList<>();
+
+    private static final long serialVersionUID = 139843L;
 
     private void addMediaToLibrary(Media media) {
         medium.add(media);
@@ -37,15 +40,7 @@ public class Library {
         SHRAEDLIST.remove(media);
     }
 
-    public static void sortByArtist(ArrayList<Media> medium) {
-        medium.sort(new SortByArtist() );
-    }
-    public static void sortByAlbum(ArrayList<Media> medium) {
-        medium.sort(new SortByAlbum());
-    }
-    public static void sortByRescntly(ArrayList<Media> medium) {
-        medium.sort(new SortByRecently());
-    }
+
 
 
 }

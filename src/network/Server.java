@@ -32,14 +32,14 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
         }
+    }
 
+    public void closeServer() throws IOException {
         for (ClientHandler c: clients) {
             c.closeHandler();
         }
-    }
 
-    public void closeServer() {
-        closed = true;
+        server.close();
     }
 
     public boolean containsClient(InetAddress ip) {
@@ -47,4 +47,5 @@ public class Server extends Thread {
 //        return clients.contains()
         return false;
     }
+
 }

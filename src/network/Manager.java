@@ -21,4 +21,10 @@ public class Manager extends Thread {
         }
 
     }
+
+    public void closeManager() {
+        closed = true;
+    }
+
+
 }

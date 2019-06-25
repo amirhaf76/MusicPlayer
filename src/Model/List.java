@@ -1,11 +1,14 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class List {
+public class List implements Serializable {
 
     private String name;
-    protected ArrayList<Media> medium = new ArrayList<>();
+    private ArrayList<Media> medium = new ArrayList<>();
+
+    private static final long serialVersionUID = 1398442L;
 
     public List(String name) {
         this.name = name;
@@ -25,21 +28,23 @@ public class List {
 
 
     public void add(Media media) {
-
-        if ( media instanceof Music ) {
-            if ( !medium.contains(media) ) {
-                medium.add(media);
-            }
-        }
-
-        if ( media instanceof Video ) {
-            // TODO: 6/20/2019 video properties
-        }
+        medium.add(media);
     }
     public void remove(Media media) {
         medium.remove(media);
     }
 
+    public ArrayList<Music> getMusic() {
+        ArrayList<Music> musics = new ArrayList<>();
+        for (Media m :
+                medium) {
+            if ( m instanceof Music ) {
+                musics.add((Music) m);
+            }
+        }
+        return  musics;
+    }
 
+    // TODO: 6/25/2019 public ArrayList<Video> getVideo(){}
 
 }

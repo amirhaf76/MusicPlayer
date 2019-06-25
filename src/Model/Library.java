@@ -1,9 +1,5 @@
 package Model;
 
-import Model.SortsClass.SortByAlbum;
-import Model.SortsClass.SortByArtist;
-import Model.SortsClass.SortByRecently;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -16,31 +12,48 @@ public class Library implements Serializable {
 
     private static final long serialVersionUID = 139843L;
 
-    private void addMediaToLibrary(Media media) {
+    public void addMediaToLibrary(Media media) {
         medium.add(media);
     }
 
-    private void removeMediaFromLibrary(Media media) {
+    public void removeMediaFromLibrary(Media media) {
         medium.remove(media);
     }
 
-    private void addMediaToFavorites(Media media) {
+    public void addMediaToFavorites(Media media) {
         FAVORITES.add(media);
     }
 
-    private void removeMediaFromFavorites(Media media) {
+    public void removeMediaFromFavorites(Media media) {
         FAVORITES.remove(media);
     }
 
-    private void addMediaToSHRAEDLIST(Media media) {
+    public void addMediaToSHRAEDLIST(Media media) {
         SHRAEDLIST.add(media);
     }
 
-    private void removeMediaToSHRAEDLIST(Media media) {
+    public void removeMediaToSHRAEDLIST(Media media) {
         SHRAEDLIST.remove(media);
     }
 
+    public ArrayList<Artist> getArtists() {
+        ArrayList<Artist> artists = new ArrayList<>();
+        for (Media m :
+                medium) {
+            if ( m instanceof Music ) {
+                artists.add(((Music) m).getArtist());
+            }
+        }
+        return artists;
+    }
 
-
+    public ArrayList<Album> getAlbums() {
+        ArrayList<Album> albums = new ArrayList<>();
+        for (Artist artist :
+                getArtists()) {
+            albums.addAll(artist.getAlbums());
+        }
+        return albums;
+    }
 
 }

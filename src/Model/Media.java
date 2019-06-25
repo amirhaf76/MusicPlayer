@@ -1,13 +1,13 @@
 package Model;
 
 import java.io.File;
+import java.io.Serializable;
 import java.sql.Time;
 
-public class Media {
+public class Media implements Serializable {
     private final File mediaFile;
     private Time addedTime;
-
-    // TODO: 6/20/2019 SimpleDataFormat
+    private Time lastTime; // TODO: 6/25/2019 add to music player
 
     public Media(File mediaFile, Time addedTime) {
         this.mediaFile = mediaFile;
@@ -26,5 +26,11 @@ public class Media {
         this.addedTime = addedTime;
     }
 
+    public Time getLastTime() {
+        return lastTime;
+    }
 
+    public void setLastTime(Time lastTime) {
+        this.lastTime = lastTime;
+    }
 }

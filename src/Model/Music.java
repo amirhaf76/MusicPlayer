@@ -10,8 +10,8 @@ public class Music extends Media {
 
     private boolean loaded = false;
     private String title = "<nothing>";
-    private String artist = "<nothing>";
-    private String album = "<nothing>";
+    private Artist artist = new Artist("<nothing>");
+    private Album album = new Album("<nothing>",artist);
     private String  year = "<nothing>";
     private String comment = "<nothing>";
     private String track = "";
@@ -45,11 +45,11 @@ public class Music extends Media {
         return title;
     }
 
-    public String getArtist() {
+    public Artist getArtist() {
         return artist;
     }
 
-    public String getAlbum() {
+    public Album getAlbum() {
         return album;
     }
 
@@ -94,8 +94,8 @@ public class Music extends Media {
 
         String details = new String(buffer,0,125);
         title = details.substring(0, 30).trim();
-        artist = details.substring(30, 60).trim();
-        album = details.substring(60, 90).trim();
+        artist = new Artist(details.substring(30, 60).trim());
+        album = new Album(details.substring(60, 90).trim(), artist);
         year = details.substring(90, 94).trim();
         comment = details.substring(94,122).trim();
         if ( comment.length() == 30 || comment.length() == 29) {
@@ -113,8 +113,8 @@ public class Music extends Media {
     private void getID3v1() throws InvalidDataException, IOException, UnsupportedTagException {
         ID3v1 id3v1 = (new Mp3File(getMediaFile().getPath())).getId3v1Tag();
         title = id3v1.getTitle();
-        artist = id3v1.getArtist();
-        album = id3v1.getAlbum();
+        artist = new Artist(id3v1.getArtist());
+        album = new Album(id3v1.getAlbum(), artist);
         comment = id3v1.getComment();
         year = id3v1.getYear();
         track = id3v1.getTrack();

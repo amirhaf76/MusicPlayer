@@ -1,4 +1,3 @@
-
 import java.awt.Image;
 import java.awt.Toolkit;
 import javafx.stage.FileChooser;
@@ -7,7 +6,10 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-
+/**
+ *
+ * @author asus
+ */
 public class GUI_2 extends javax.swing.JFrame {
 
     public void setIcon(JComponent com,String picPath,int i)
@@ -33,7 +35,6 @@ public class GUI_2 extends javax.swing.JFrame {
 
 
     }
-
 
 
     public GUI_2() {
@@ -76,7 +77,7 @@ public class GUI_2 extends javax.swing.JFrame {
         repeat = new javax.swing.JButton();
         Shufel = new javax.swing.JButton();
         east = new javax.swing.JPanel();
-        Friend = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         center = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -104,7 +105,7 @@ public class GUI_2 extends javax.swing.JFrame {
         });
 
         searchmusicB.setForeground(new java.awt.Color(0, 204, 51));
-        searchmusicB.setText("ٍSearch");
+        searchmusicB.setText("Search");
 
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 204, 51));
@@ -150,7 +151,7 @@ public class GUI_2 extends javax.swing.JFrame {
                                 .addComponent(searchartA, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(searchartB)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 115, Short.MAX_VALUE)
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(Username, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -194,6 +195,7 @@ public class GUI_2 extends javax.swing.JFrame {
         Favorites.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         Favorites.setForeground(new java.awt.Color(0, 204, 51));
         Favorites.setText("Favorits");
+        Favorites.setBorder(null);
         Favorites.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 FavoritesActionPerformed(evt);
@@ -204,16 +206,20 @@ public class GUI_2 extends javax.swing.JFrame {
         Library.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         Library.setForeground(new java.awt.Color(0, 204, 51));
         Library.setText("Library");
+        Library.setBorder(null);
 
         Playlists.setBackground(new java.awt.Color(51, 51, 51));
         Playlists.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         Playlists.setForeground(new java.awt.Color(0, 204, 51));
         Playlists.setText("Playlists");
+        Playlists.setBorder(null);
         Playlists.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 PlaylistsActionPerformed(evt);
             }
         });
+
+        AKS.setIcon(new javax.swing.ImageIcon("D:\\Java\\Jpotify\\spotify (1).png")); // NOI18N
 
         Artwork.setBackground(new java.awt.Color(51, 51, 51));
         Artwork.setColumns(20);
@@ -225,6 +231,7 @@ public class GUI_2 extends javax.swing.JFrame {
         jButton2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jButton2.setForeground(new java.awt.Color(0, 204, 51));
         jButton2.setText("ShareList");
+        jButton2.setBorder(null);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -248,7 +255,8 @@ public class GUI_2 extends javax.swing.JFrame {
                                 .addGroup(westLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(Aksalbum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(westLayout.createSequentialGroup()
-                                                .addComponent(AKS, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(33, 33, 33)
+                                                .addComponent(AKS, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addComponent(jScrollPane1))
@@ -259,9 +267,11 @@ public class GUI_2 extends javax.swing.JFrame {
                 westLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(westLayout.createSequentialGroup()
                                 .addContainerGap()
-                                .addGroup(westLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(westLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(AKS, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(westLayout.createSequentialGroup()
+                                                .addComponent(AKS, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(10, 10, 10)))
                                 .addGap(18, 18, 18)
                                 .addGroup(westLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel1)
@@ -274,7 +284,7 @@ public class GUI_2 extends javax.swing.JFrame {
                                 .addComponent(Favorites)
                                 .addGap(18, 18, 18)
                                 .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                                 .addComponent(Aksalbum, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -289,12 +299,28 @@ public class GUI_2 extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(0, 204, 51));
         jLabel4.setText("Volume: ");
 
+        Play.setBackground(new java.awt.Color(51, 51, 51));
+        Play.setIcon(new javax.swing.ImageIcon("D:\\Java\\Jpotify\\play-button.png")); // NOI18N
+        Play.setBorder(null);
+
+        forward.setBackground(new java.awt.Color(51, 51, 51));
+        forward.setIcon(new javax.swing.ImageIcon("D:\\Java\\Jpotify\\play-next-button (1).png")); // NOI18N
+        forward.setBorder(null);
         forward.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 forwardActionPerformed(evt);
             }
         });
 
+        Backward.setBackground(new java.awt.Color(51, 51, 51));
+        Backward.setIcon(new javax.swing.ImageIcon("D:\\Java\\Jpotify\\backbutoon.png")); // NOI18N
+        Backward.setBorder(null);
+        repeat.setBackground(new java.awt.Color(51, 51, 51));
+        repeat.setIcon(new javax.swing.ImageIcon("D:\\Java\\Jpotify\\repeatwh.png")); // NOI18N
+        repeat.setBorder(null);
+        Shufel.setBackground(new java.awt.Color(51, 51, 51));
+        Shufel.setIcon(new javax.swing.ImageIcon("D:\\Java\\Jpotify\\couple-of-arrows-changing-placeswhite.png")); // NOI18N
+        Shufel.setBorder(null);
         javax.swing.GroupLayout southLayout = new javax.swing.GroupLayout(south);
         south.setLayout(southLayout);
         southLayout.setHorizontalGroup(
@@ -307,17 +333,17 @@ public class GUI_2 extends javax.swing.JFrame {
                                                 .addComponent(jLabel4)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(190, 190, 190)
-                                                .addComponent(Shufel)
+                                                .addGap(242, 242, 242)
+                                                .addComponent(Shufel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)
-                                                .addComponent(Backward)
+                                                .addComponent(Backward, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)
-                                                .addComponent(Play)
+                                                .addComponent(Play, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)
-                                                .addComponent(forward)
+                                                .addComponent(forward, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(18, 18, 18)
-                                                .addComponent(repeat)
-                                                .addGap(0, 441, Short.MAX_VALUE)))
+                                                .addComponent(repeat, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
         southLayout.setVerticalGroup(
@@ -330,32 +356,33 @@ public class GUI_2 extends javax.swing.JFrame {
                                         .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(jLabel4)
                                         .addGroup(southLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                .addComponent(Play, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(forward, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(Backward, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(repeat, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(Shufel, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(Play, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(forward, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(Backward, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(repeat, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(Shufel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(45, Short.MAX_VALUE))
         );
 
         east.setBackground(new java.awt.Color(51, 51, 51));
 
-        Friend.setBackground(new java.awt.Color(51, 51, 51));
-        Friend.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        Friend.setForeground(new java.awt.Color(0, 204, 51));
-        Friend.setText("Friend Activity");
+        jButton1.setBackground(new java.awt.Color(51, 51, 51));
+        jButton1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(0, 204, 51));
+        jButton1.setText("Friend Activity");
+        jButton1.setBorder(null);
 
         javax.swing.GroupLayout eastLayout = new javax.swing.GroupLayout(east);
         east.setLayout(eastLayout);
         eastLayout.setHorizontalGroup(
                 eastLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(Friend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         eastLayout.setVerticalGroup(
                 eastLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(eastLayout.createSequentialGroup()
                                 .addGap(186, 186, 186)
-                                .addComponent(Friend)
+                                .addComponent(jButton1)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -365,7 +392,7 @@ public class GUI_2 extends javax.swing.JFrame {
         center.setLayout(centerLayout);
         centerLayout.setHorizontalGroup(
                 centerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 1083, Short.MAX_VALUE)
+                        .addGap(0, 1179, Short.MAX_VALUE)
         );
         centerLayout.setVerticalGroup(
                 centerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -454,7 +481,6 @@ public class GUI_2 extends javax.swing.JFrame {
         // TODO add your handling code here:
     }
 
-
     private javax.swing.JLabel AKS;
     private javax.swing.JLabel Aksalbum;
     private javax.swing.JTextArea Artwork;
@@ -469,7 +495,7 @@ public class GUI_2 extends javax.swing.JFrame {
     private javax.swing.JPanel center;
     private javax.swing.JPanel east;
     private javax.swing.JButton forward;
-    private javax.swing.JButton Friend;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

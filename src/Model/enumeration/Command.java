@@ -1,7 +1,7 @@
-package Model;
+package Model.enumeration;
 
 public enum Command {
-    GETSTATUS(0, "Get Status"), DOWNLOAD(1, "Download"),
+    STATUS(0, "Get Status"), DOWNLOAD(1, "Download"),
     SHAREDLIST(2, "Shared List"), SHAREDMUSIC(3, "Shared Music");
 
     private int number;

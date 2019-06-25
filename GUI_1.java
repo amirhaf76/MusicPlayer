@@ -11,6 +11,8 @@ public class GUI_1 {
     public GUI_1() {
         JFrame Jpotify = new JFrame("Jpotify");
         Jpotify.setResizable(false);
+        ImageIcon img = new ImageIcon("d://java//Jpotify//spotify (1).png");
+        Jpotify.setIconImage(img.getImage());
         Jpotify.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Jpotify.setLocation(700, 375);
         Jpotify.setLayout(new BorderLayout());
@@ -61,7 +63,7 @@ public class GUI_1 {
         JLabel c = new JLabel("Username:  ");
         c.setForeground(new java.awt.Color(0, 204, 51));
         panelce.add(c, BorderLayout.NORTH);
-        JLabel d = new JLabel("Username:  ");
+        JLabel d = new JLabel("Password:  ");
         d.setForeground(new java.awt.Color(0, 204, 51));
         panelce.add(d, BorderLayout.SOUTH);
         JLabel J = new JLabel("Jpotify");

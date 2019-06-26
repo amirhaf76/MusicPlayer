@@ -22,6 +22,14 @@ public class Manager extends Thread {
 
     }
 
+    public void addClientHandler(ClientHandler cH) {
+        clientHandlers.add(cH);
+    }
+
+    public void removeaClientHandler(ClientHandler cH) {
+        clientHandlers.remove(cH);
+    }
+
     public void closeManager() {
         closed = true;
     }

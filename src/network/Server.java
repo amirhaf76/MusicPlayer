@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 public class Server extends Thread {
 
-    private volatile boolean closed = false; // thread
     private final ServerSocket server;
     private ArrayList<ClientHandler> clients = new ArrayList<>();
 
@@ -20,7 +19,7 @@ public class Server extends Thread {
         Socket newClient;
         ClientHandler clientHandler;
 
-        while ( !closed ) {
+        while ( true ) {
             try {
                 newClient = server.accept();
 
@@ -38,7 +37,6 @@ public class Server extends Thread {
         for (ClientHandler c: clients) {
             c.closeHandler();
         }
-
         server.close();
     }
 

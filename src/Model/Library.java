@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class Library implements Serializable {
 
     private ArrayList<Media> medium = new ArrayList<>();
-    private final List FAVORITES = new List("Favorites");
-    private final List SHRAEDLIST = new List("Shared List");
+    private List favorites = new List("favorites");
+    private List sharedMusic = new List("Shared List");
     private ArrayList<List> playList = new ArrayList<>();
 
     private static final long serialVersionUID = 139843L;
@@ -21,19 +21,19 @@ public class Library implements Serializable {
     }
 
     public void addMediaToFavorites(Media media) {
-        FAVORITES.add(media);
+        favorites.add(media);
     }
 
     public void removeMediaFromFavorites(Media media) {
-        FAVORITES.remove(media);
+        favorites.remove(media);
     }
 
     public void addMediaToSHRAEDLIST(Media media) {
-        SHRAEDLIST.add(media);
+        sharedMusic.add(media);
     }
 
     public void removeMediaToSHRAEDLIST(Media media) {
-        SHRAEDLIST.remove(media);
+        sharedMusic.remove(media);
     }
 
     public ArrayList<Artist> getArtists() {
@@ -56,4 +56,35 @@ public class Library implements Serializable {
         return albums;
     }
 
+    public ArrayList<Media> getMedium() {
+        return medium;
+    }
+
+    public void setMedium(ArrayList<Media> medium) {
+        this.medium = medium;
+    }
+
+    public ArrayList<List> getPlayList() {
+        return playList;
+    }
+
+    public void setPlayList(ArrayList<List> playList) {
+        this.playList = playList;
+    }
+
+    public List getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(List favorites) {
+        this.favorites = favorites;
+    }
+
+    public List getSharedMusic() {
+        return sharedMusic;
+    }
+
+    public void setSharedMusic(List sharedMusic) {
+        this.sharedMusic = sharedMusic;
+    }
 }

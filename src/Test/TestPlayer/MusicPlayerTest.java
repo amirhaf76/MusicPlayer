@@ -1,4 +1,4 @@
-package Test;
+package Test.TestPlayer;
 
 import Model.Music;
 import Model.MusicPlayer;

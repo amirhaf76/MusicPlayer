@@ -1,4 +1,4 @@
-package Test;
+package Test.TestPlayer;
 
 import static org.junit.jupiter.api.Assertions.*;
 

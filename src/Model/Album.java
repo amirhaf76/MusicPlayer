@@ -2,6 +2,7 @@ package Model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Album implements Serializable {
     private final String name;
@@ -36,5 +37,19 @@ public class Album implements Serializable {
         if ( music.getArtist().equals(artist) ) {
             this.musics.remove(music);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Album album = (Album) o;
+        return name.equals(album.name) &&
+                artist.equals(album.artist);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, artist);
     }
 }

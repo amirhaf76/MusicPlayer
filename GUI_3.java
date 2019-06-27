@@ -12,7 +12,7 @@ public class GUI_3 extends javax.swing.JFrame {
         jFileChooser1 = new javax.swing.JFileChooser();
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        ImageIcon img = new ImageIcon("d://java//Jpotify//find-on-page.png");
+        ImageIcon img = new ImageIcon("find-on-page.png");
         setIconImage(img.getImage());
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

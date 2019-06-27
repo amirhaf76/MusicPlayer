@@ -11,7 +11,7 @@ public class GUI_1 {
     public GUI_1() {
         JFrame Jpotify = new JFrame("Jpotify");
         Jpotify.setResizable(false);
-        ImageIcon img = new ImageIcon("d://java//Jpotify//spotify (1).png");
+        ImageIcon img = new ImageIcon("spotify (1).png");
         Jpotify.setIconImage(img.getImage());
         Jpotify.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Jpotify.setLocation(700, 375);
@@ -94,6 +94,20 @@ public class GUI_1 {
         panele.add(new JLabel("                           "), BorderLayout.EAST);
         Jpotify.add(start);
         Jpotify.setVisible(true);
+        Signin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GUI_2 GUI_2 = new GUI_2();
+                Jpotify.setVisible(false);
+            }
+        });
+        Signup.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GUI_2 GUI_2 = new GUI_2();
+                Jpotify.setVisible(false);
+            }
+        });
         Jpotify.pack();
     }
 

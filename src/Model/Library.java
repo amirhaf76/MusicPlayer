@@ -7,7 +7,7 @@ public class Library implements Serializable {
 
     private ArrayList<Media> medium = new ArrayList<>();
     private List favorites = new List("favorites");
-    private List sharedMusic = new List("Shared List");
+    private List sharedList = new List("Shared List");
     private ArrayList<List> playList = new ArrayList<>();
 
     private static final long serialVersionUID = 139843L;
@@ -29,11 +29,11 @@ public class Library implements Serializable {
     }
 
     public void addMediaToSHRAEDLIST(Media media) {
-        sharedMusic.add(media);
+        sharedList.add(media);
     }
 
     public void removeMediaToSHRAEDLIST(Media media) {
-        sharedMusic.remove(media);
+        sharedList.remove(media);
     }
 
     public ArrayList<Artist> getArtists() {
@@ -80,11 +80,11 @@ public class Library implements Serializable {
         this.favorites = favorites;
     }
 
-    public List getSharedMusic() {
-        return sharedMusic;
+    public List getSharedList() {
+        return sharedList;
     }
 
-    public void setSharedMusic(List sharedMusic) {
-        this.sharedMusic = sharedMusic;
+    public void setSharedList(List sharedList) {
+        this.sharedList = sharedList;
     }
 }

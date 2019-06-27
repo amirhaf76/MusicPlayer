@@ -313,13 +313,13 @@ public class MusicController extends MusicPlayer {
 
 
     private Music nextMusicBasedOnShuffle() {
-        Random random = new Random(getMusics().size());
+        Random random = new Random();
 
         if ( !(pastMusic.size() < super.getMusics().size()) ) {
             pastMusic.removeAll(super.getMusics().subList(0,super.getMusics().size()));
         }
         while (true) {
-            Music tempMusic = super.getMusics().get(random.nextInt());
+            Music tempMusic = super.getMusics().get(random.nextInt(getMusics().size())); // TODO: 6/27/2019 check random
             if ( !pastMusic.contains(tempMusic) ){
                 pastMusic.add(tempMusic);
                 return tempMusic;

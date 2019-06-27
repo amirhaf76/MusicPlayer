@@ -1,5 +1,7 @@
 package network;
 
+import Model.User;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -7,11 +9,13 @@ import java.util.ArrayList;
 public class Server extends Thread {
 
     private final ServerSocket server;
+    private final User user;
     private ArrayList<ClientHandler> clients = new ArrayList<>();
 
 
-    public Server() throws IOException {
+    public Server(User user) throws IOException {
         this.server = new ServerSocket(1398);
+        this.user = user;
     }
 
     @Override
@@ -23,7 +27,7 @@ public class Server extends Thread {
             try {
                 newClient = server.accept();
 
-                clientHandler = new ClientHandler(newClient);
+                clientHandler = new ClientHandler(user, newClient);
 
                 clients.add(clientHandler);
 
@@ -38,6 +42,7 @@ public class Server extends Thread {
             c.closeHandler();
         }
         server.close();
+
     }
 
     public boolean containsClient(InetAddress ip) {

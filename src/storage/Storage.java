@@ -11,9 +11,10 @@ public class Storage {
     private final String parent;
     private final User user;
 
+
     public Storage(User user) {
         this.user = user;
-        parent = "User: " + user.getName();
+        parent = "User:" + user.getName();
     }
 
     public void makeFile() {
@@ -49,5 +50,6 @@ public class Storage {
         out.close();
         savedFile.close();
     }
+
 
 }

@@ -12,7 +12,7 @@ public class ReloadFile {
 
     public ReloadFile(User user) {
         this.user = user;
-        parent = "User: " + user.getName();
+        parent = "User:" + user.getName();
     }
 
     public User reloadUser() throws IOException, ClassNotFoundException {

@@ -1,6 +1,7 @@
 package Model;
 
 import Model.enumeration.Control;
+import Model.enumeration.Repetition;
 import javazoom.jl.decoder.JavaLayerException;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static Model.enumeration.Control.*;
-import static Model.Repetition.*;
+import static Model.enumeration.Repetition.*;
 
 public class MusicController extends MusicPlayer {
 

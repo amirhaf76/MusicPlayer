@@ -1,4 +1,4 @@
-package Model;
+package Model.enumeration;
 
 public enum Repetition {
     ALWAYS(7, "Always"), ONCE( 8, "Once"), JUSTTHIS(9, "JustThis");

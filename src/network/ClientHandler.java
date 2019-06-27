@@ -3,22 +3,24 @@ package network;
 import Model.Music;
 import Model.User;
 import Model.enumeration.Command;
+import storage.DownloadFile;
 import storage.SaveDownload;
-
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 
 
 public class ClientHandler implements Runnable {
 
+
     private final Socket client;
     private final User user;
+    private final Manager manager;
     private final ObjectInputStream ois;
     private final ObjectOutputStream oos;
 
     private final Object lock = new Object();
+
 
     private DownloadFile requestedMusic;
 
@@ -28,11 +30,12 @@ public class ClientHandler implements Runnable {
     private ArrayList<Command> commands = new ArrayList<>();
 
 
-    public ClientHandler(User user, Socket client) throws IOException {
+    public ClientHandler(User user, Socket client, Manager manager) throws IOException {
         this.user = user;
         this.client = client;
         this.ois = new ObjectInputStream(client.getInputStream());
         this.oos = new ObjectOutputStream(client.getOutputStream());
+        this.manager = manager;
     }
 
     public void closeHandler() throws IOException {
@@ -58,28 +61,29 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        Package receivedPackage;
-        Package torturePackage;
 
         synchronized (lock) {
-            try {
+            if ( !client.isClosed() ){
 
-                receivedPackage = (Package) ois.readObject();
+                try {
+                    Package receivedPackage;
+                    Package torturePackage;
 
-                // get data from package
-                getDataFromPackage(receivedPackage);
+                    receivedPackage = (Package) ois.readObject();
 
-                // answer to command
-                torturePackage = answerToCommand(receivedPackage);
+                    // get data from package
+                    getDataFromPackage(receivedPackage);
 
-                // send package
-                oos.writeObject(torturePackage);
+                    // answer to command
+                    torturePackage = answerToCommand(receivedPackage);
+
+                    // send package
+                    oos.writeObject(torturePackage);
 
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                } catch (IOException | ClassNotFoundException e) {
+                    manager.removeClientHandler(this);
+                }
             }
         }
 
@@ -148,11 +152,7 @@ public class ClientHandler implements Runnable {
 
     }
 
-
-
-    public SocketAddress getAddressOfEndPoint() {
-        return client.getLocalSocketAddress();
+    public Socket getClient() {
+        return client;
     }
-
-
 }

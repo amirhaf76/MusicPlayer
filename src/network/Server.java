@@ -1,54 +1,49 @@
 package network;
 
-import Model.User;
-
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
 
 public class Server extends Thread {
 
     private final ServerSocket server;
-    private final User user;
-    private ArrayList<ClientHandler> clients = new ArrayList<>();
+    private final Manager manager;
+    private boolean closed = false;
 
 
-    public Server(User user) throws IOException {
+
+    public Server(Manager manager) throws IOException {
         this.server = new ServerSocket(1398);
-        this.user = user;
+        this.manager = manager;
+
     }
 
     @Override
     public void run() {
-        Socket newClient;
-        ClientHandler clientHandler;
 
         while ( true ) {
+            Socket newClient;
+            ClientHandler clientHandler;
             try {
                 newClient = server.accept();
 
-                clientHandler = new ClientHandler(user, newClient);
+                clientHandler = new ClientHandler(manager.getNetWork().getUser(), newClient, manager);
 
-                clients.add(clientHandler);
+                manager.addClientHandler(newClient.getInetAddress() ,clientHandler);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                closed = true;
             }
         }
     }
 
-    public void closeServer() throws IOException {
-        for (ClientHandler c: clients) {
-            c.closeHandler();
-        }
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void close() throws IOException {
+        closed = true;
         server.close();
-
     }
 
-    public boolean containsClient(InetAddress ip) {
-        // TODO: 6/25/2019 does server have this ip
-//        return clients.contains()
-        return false;
-    }
 
 }

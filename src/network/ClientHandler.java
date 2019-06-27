@@ -1,78 +1,157 @@
 package network;
 
+import Model.Music;
+import Model.User;
 import Model.enumeration.Command;
+import storage.SaveDownload;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.Scanner;
+
 
 public class ClientHandler implements Runnable {
 
-    private final BufferedReader buffer;
-    private final PrintWriter out;
     private final Socket client;
+    private final User user;
+    private final ObjectInputStream ois;
+    private final ObjectOutputStream oos;
+
     private final Object lock = new Object();
+
+    private DownloadFile requestedMusic;
+
+    private SaveDownload newMusic;
+    private Music getMusic;
 
     private ArrayList<Command> commands = new ArrayList<>();
 
 
-    public ClientHandler(Socket client) throws IOException {
+    public ClientHandler(User user, Socket client) throws IOException {
+        this.user = user;
         this.client = client;
-        this.buffer = new BufferedReader(new InputStreamReader(client.getInputStream()) );
-        this.out = new PrintWriter(client.getOutputStream());
+        this.ois = new ObjectInputStream(client.getInputStream());
+        this.oos = new ObjectOutputStream(client.getOutputStream());
     }
 
     public void closeHandler() throws IOException {
         synchronized (lock) {
-            buffer.close();
-            out.close();
+            ois.close();
+            oos.close();
             client.close();
+        }
+    }
+
+    public void downloadMusic(Music music) {
+        if ( !commands.contains(Command.DOWNLOAD) ) {
+            commands.add(Command.DOWNLOAD);
+        }
+        getMusic = music;
+    }
+
+    public void requestSharedMusic() {
+        if ( !commands.contains(Command.SHAREDMUSIC) ) {
+            commands.add(Command.SHAREDMUSIC);
         }
     }
 
     @Override
     public void run() {
-        // phase 1 : send command
-        addCommand(Command.STATUS); // get status is automatic command
+        Package receivedPackage;
+        Package torturePackage;
 
-    }
+        synchronized (lock) {
+            try {
 
-    public SocketAddress getAddressOfEndPoint() {
-        return client.getLocalSocketAddress();
-    }
+                receivedPackage = (Package) ois.readObject();
 
-    public void addCommand(Command command) {
-        if ( !commands.contains(command) ) {
-           commands.add(command);
+                // get data from package
+                getDataFromPackage(receivedPackage);
+
+                // answer to command
+                torturePackage = answerToCommand(receivedPackage);
+
+                // send package
+                oos.writeObject(torturePackage);
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
-    public void sendCommands(PrintWriter out, ArrayList<Command> commands) throws IOException {
-        out.print(commands);
-        out.flush();
-        commands.removeAll( commands.subList(0,commands.size()) );
-    }
 
-    public void answerToCommand(ArrayList<Command> commands) {
+
+    private Package answerToCommand(Package receivedPackage) throws IOException {
+
+        ArrayList<Music> requestedSharedMusic = new ArrayList<>();
+        byte[] data = new byte[0];
+        boolean end = true;
+
         for (Command c :
-                commands) {
-            switch (c) { // TODO: 6/25/2019 complete this part
-                case DOWNLOAD:
-                    break;
-                case STATUS:
-                    break;
-                case SHAREDLIST:
-                    break;
+                receivedPackage.getCommands()) {
+
+            switch (c) {
                 case SHAREDMUSIC:
+                    requestedSharedMusic = user.getLibrary().getSharedList().getMusic();
+                    break;
+                case DOWNLOAD:
+                    data = download(receivedPackage.getGetMusic());
+                    end = data.length == 0;
                     break;
             }
         }
+
+        return new Package(commands,
+                requestedSharedMusic,
+                getMusic, data, end);
     }
 
-    public void getAnswer() {
 
+
+    private byte[] download(Music music) throws IOException {
+        // prepare file
+        if ( requestedMusic == null ) {
+            requestedMusic = new DownloadFile(music.getMediaFile());
+            requestedMusic.prepareForSending();
+        }
+
+        if ( !requestedMusic.isEnd() ) {
+            return requestedMusic.getPartOfData();
+        }
+        else {
+            byte[] temp = requestedMusic.getPartOfData();
+            requestedMusic = null;
+            return temp;
+        }
+    }
+
+
+
+    private void getDataFromPackage(Package receivedPackage) throws IOException {
+        if ( newMusic != null ) {
+            newMusic = new SaveDownload(user.getName(),
+                    getMusic.getMediaFile().getName());
+        }
+
+        if ( !receivedPackage.isEndDownload()) {
+            newMusic.saveData(receivedPackage.getData());
+        } else {
+            newMusic.end();
+            newMusic = null;
+        }
+
+    }
+
+
+
+    public SocketAddress getAddressOfEndPoint() {
+        return client.getLocalSocketAddress();
     }
 
 

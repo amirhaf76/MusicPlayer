@@ -18,17 +18,23 @@ public class DownloadFile {
 
     public void prepareForSending() throws IOException {
         BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(file));
-        byte[] temp = new byte[MB];
         int bytesAccount;
 
-        while ( (bytesAccount = buffer.read(temp)) != -1 ) {
+        while ( true ) {
+            byte[] temp = new byte[MB];
+            if ( (bytesAccount = buffer.read(temp)) == -1 ) {
+                break;
+            }
             if (bytesAccount == MB) {
+
                 data.add(temp);
+
             }
             else {
                 byte[] bytes = new byte[bytesAccount];
                 System.arraycopy(temp, 0, bytes, 0, bytesAccount);
                 data.add(bytes);
+
             }
         }
 
@@ -40,9 +46,8 @@ public class DownloadFile {
         return data;
     }
 
-    public byte[] getPartOfData() {
+    public byte[] getPartOfData() throws IOException {
         byte[] temp = new byte[0];
-
         if ( partNumber >= 0 && partNumber < data.size() ) {
 
             if ( partNumber == data.size()-1 ) { // last part : data.size() - 1
@@ -68,3 +73,4 @@ public class DownloadFile {
         return partNumber;
     }
 }
+

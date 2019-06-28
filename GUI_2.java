@@ -1,5 +1,5 @@
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.*;
+
 import javafx.stage.FileChooser;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -68,8 +68,8 @@ public class GUI_2 extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Jpotify");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        setName("Jpotify"); // NOI18N
-
+        setName("Jpotify");
+        setLayout(new BorderLayout());
         window.setBackground(new java.awt.Color(102, 102, 0));
 
         north.setBackground(new java.awt.Color(51, 51, 51));

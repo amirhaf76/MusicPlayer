@@ -18,8 +18,9 @@ public class User implements Serializable {
 
     private transient Library library = new Library();
     private transient NetWork netWork;
+    private transient MusicController musicController = new MusicController();
 
-    private ArrayList<InetAddress> friends = new ArrayList<>();
+    private transient ArrayList<InetAddress> friends = new ArrayList<>();
 
 
 
@@ -65,6 +66,10 @@ public class User implements Serializable {
 
     public ArrayList<InetAddress> getFriends() {
         return friends;
+    }
+
+    public MusicController getMusicController() {
+        return musicController;
     }
 
     @Override

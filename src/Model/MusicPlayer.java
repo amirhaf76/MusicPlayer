@@ -8,13 +8,13 @@ public class MusicPlayer {
 
     private final Object lock = new Object();
 
-    // TODO: 6/24/2019 add lock to for adding and removing music
     public void addMusic(Media media) {
+        synchronized (lock) {
+            if ( media instanceof Music ) { // if media is Music, ...
 
-        if ( media instanceof Music ) { // if media is Music, ...
-
-            if ( !musics.contains(media) ) { // if there is not any music like media, ...
-                musics.add((Music) media);
+                if ( !musics.contains(media) ) { // if there is not any music like media, ...
+                    musics.add((Music) media);
+                }
             }
         }
     }
@@ -24,12 +24,17 @@ public class MusicPlayer {
     }
 
     public void addMusic(ArrayList<Music> medium) {
-
-        for (Media m : // for all medium
-                medium) {
-            this.addMusic(m);
+        synchronized (lock) {
+            for (Media m : // for all medium
+                    medium) {
+                this.addMusic(m);
+            }
         }
 
+    }
+
+    public void removeAllMusics() {
+        musics.removeAll(musics.subList(0, musics.size()));
     }
 
     public ArrayList<Music> getMusics() {

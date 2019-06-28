@@ -14,6 +14,13 @@ public class Media implements Serializable {
         this.addedTime = addedTime;
     }
 
+    public String getName() {
+        if ( this instanceof Music ) {
+            return ((Music)this).getTitle();
+        }
+        return "<it's not Music>";
+    }
+
     public File getMediaFile() {
         return mediaFile;
     }

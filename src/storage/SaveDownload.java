@@ -44,6 +44,10 @@ public class SaveDownload {
 
     }
 
+    public File getDownloadFile() {
+        return file;
+    }
+
     public boolean isEnd() {
         return end;
     }

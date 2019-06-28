@@ -1,46 +1,35 @@
 package network;
 
 import Model.Music;
-import Model.enumeration.Command;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Package implements Serializable {
-    // request
-    private final ArrayList<Command> request;
 
     // requested list of shared music
-    private final ArrayList<Music> requestedSharedMusic;
+    private final ArrayList<Music> SharedMusic;
 
-    // music that is requested
-    private final Music getMusic;
+    // music that sender requested
+    private final Music downloadMusic;
 
     // data of music which is requested
     private final byte[] data;
 
-    // the end of sending data of requested music
-    private final boolean endDownload;
-
     private static final long serialVersionUID = 1396461L;
 
 
-    public Package(ArrayList<Command> request, ArrayList<Music> requestedSharedMusic,
-                   Music getMusic, byte[] data, boolean endDownload) { // date : data of getMusic
-        this.request = request;
-        this.requestedSharedMusic = requestedSharedMusic;
-        this.getMusic = getMusic;
+    public Package(ArrayList<Music> SharedMusic,
+                   Music getMusic, byte[] data) { // date : data of getMusic
+        this.SharedMusic = SharedMusic;
+        this.downloadMusic = getMusic;
         this.data = data;
-        this.endDownload = endDownload;
     }
     // TODO: 6/26/2019 sharedList
+    
 
-
-    public ArrayList<Command> getRequest() {
-        return request;
-    }
-
-    public ArrayList<Music> getRequestedSharedMusic() {
-        return requestedSharedMusic;
+    public ArrayList<Music> getSharedMusic() {
+        return SharedMusic;
     }
 
     public byte[] getData() {
@@ -48,10 +37,7 @@ public class Package implements Serializable {
     }
 
     public Music getGetMusic() {
-        return getMusic;
+        return downloadMusic;
     }
 
-    public boolean isEndDownload() {
-        return endDownload;
-    }
 }

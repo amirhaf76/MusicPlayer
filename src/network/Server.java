@@ -8,14 +8,13 @@ public class Server extends Thread {
     private final ServerSocket server;
     private final Manager manager;
     private boolean closed = false;
-    private static int portNumber = 1398;
+
 
 
 
     public Server(Manager manager) throws IOException {
-        this.server = new ServerSocket(portNumber);
+        this.server = new ServerSocket(1398);
         this.manager = manager;
-        portNumber++;
     }
 
     @Override

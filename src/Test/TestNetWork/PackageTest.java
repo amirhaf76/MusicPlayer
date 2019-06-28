@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class PackageTest {
     private Package aPackage;
     private ArrayList<Music> musics = new ArrayList<>();
-    private ArrayList<Command> request = new ArrayList<>();
     private byte[] bytes = new byte[]{8,9,4,6,7};
     private String path = "I:\\Amir.haf76's Files\\Univercity\\ProjectOfJava\\src\\Test\\FileOfTest\\";
 
@@ -27,9 +26,7 @@ class PackageTest {
         Music music = new Music(new File(path+"Homemade Dynamite Remix - Lorde.mp3"),
                 new Time(System.currentTimeMillis()));
         musics.add(music);
-        request.add(Command.STATUS);
-        request.add(Command.DOWNLOAD);
-        aPackage = new Package(request,musics,music,bytes,false);
+        aPackage = new Package(musics,music,bytes);
     }
 
     @Test
@@ -38,12 +35,9 @@ class PackageTest {
         assertEquals(new Music(new File(path + "Homemade Dynamite Remix - Lorde.mp3")
                 ,new Time(System.currentTimeMillis())), aPackage.getGetMusic());
         assertEquals(new Music(new File(path + "Homemade Dynamite Remix - Lorde.mp3")
-                ,new Time(System.currentTimeMillis())), aPackage.getRequestedSharedMusic().get(0));
-        assertFalse(aPackage.isEndDownload());
+                ,new Time(System.currentTimeMillis())), aPackage.getSharedMusic().get(0));
+
         assertArrayEquals(bytes, aPackage.getData());
-        assertEquals(Command.DOWNLOAD, aPackage.getRequest().get(1) );
-        assertEquals(Command.STATUS, aPackage.getRequest().get(0) );
-        assertEquals(2, aPackage.getRequest().size());
-        assertEquals(1, aPackage.getRequestedSharedMusic().size());
+        assertEquals(1, aPackage.getSharedMusic().size());
     }
 }

@@ -15,7 +15,7 @@ public class User implements Serializable {
     private String password;
     private InetAddress ip;
 
-    private transient Library library;
+    private transient Library library = new Library();
     private transient NetWork netWork;
 
     private ArrayList<InetAddress> friends = new ArrayList<>();
@@ -24,18 +24,19 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1398441L;
 
-    public User(String name, String password) {
+    public User(String name, String password) throws IOException {
         this.name = name;
         this.password = password;
-    }
-
-    public void runNetWork() throws IOException {
         netWork = new NetWork(this);
         netWork.runNetwork();
     }
 
     public String getName() {
         return name;
+    }
+
+    public NetWork getNetWork() {
+        return netWork;
     }
 
     public boolean canPass(String password) {

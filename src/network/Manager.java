@@ -26,9 +26,12 @@ public class Manager extends Thread {
         System.out.println("Running manager ...");
         while ( !closed ) {
             synchronized (lock) {
-                for (ClientHandler cH :
-                        clientHandlerHashMap.values()) {
-                    pool.execute(cH);
+                if (clientHandlerHashMap.size() != 0 ) {
+
+                    for (ClientHandler cH :
+                            clientHandlerHashMap.values()) {
+                        pool.execute(cH);
+                    }
                 }
             }
         }

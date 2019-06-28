@@ -2,11 +2,13 @@ package network;
 
 import Model.Music;
 import Model.User;
-import Model.enumeration.Command;
+import mp3agic.InvalidDataException;
+import mp3agic.UnsupportedTagException;
 import storage.DownloadFile;
 import storage.SaveDownload;
 import java.io.*;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 
 
@@ -21,13 +23,15 @@ public class ClientHandler implements Runnable {
 
     private final Object lock = new Object();
 
+    private ArrayList<Music> sharedList = new ArrayList<>();
 
-    private volatile DownloadFile requestedMusic;
+    private volatile DownloadFile preparationOfRequestedMusic;
+    private volatile Music requestedMusic;
 
-    private volatile SaveDownload newMusic;
+    private volatile SaveDownload fileOfDownloadMusic;
     private volatile Music downloadMusic;
 
-    private ArrayList<Command> commands = new ArrayList<>();
+
 
 
     public ClientHandler(User user, Socket client, Manager manager) throws IOException {
@@ -49,128 +53,136 @@ public class ClientHandler implements Runnable {
     public void downloadMusic(Music music) {
         synchronized (lock) {
             if ( downloadMusic == null ) {
-
-                if ( !commands.contains(Command.DOWNLOAD) ) {
-                    commands.add(Command.DOWNLOAD);
-                }
                 downloadMusic = music;
             }
         }
     }
 
-    public void requestSharedMusic() {
-        synchronized (lock) {
-            if ( !commands.contains(Command.SHAREDMUSIC) ) {
-                commands.add(Command.SHAREDMUSIC);
-            }
-        }
+    public ArrayList<Music> getSharedList() {
+        return sharedList;
     }
+
+    public Socket getClient() {
+        return client;
+    }
+
+
 
     @Override
     public void run() {
 
 
         if ( !client.isClosed() ){
+            synchronized (lock) {
+                try {
+                    Package receivedPackage;
+                    Package torturePackage;
 
-            try {
-                Package receivedPackage;
-                Package torturePackage;
-                if (ois.available()>0) {
-                    receivedPackage = (Package) ois.readObject();
-                    // get data from package
-                    if ( downloadMusic != null ) {
-                        getDataFromPackage(receivedPackage);
+                    // check does anything received
+                    if (ois.available()>0) {
+                        receivedPackage = (Package) ois.readObject();
+
+                        // extract package
+                        extractPackage(receivedPackage);
+
                     }
 
-                    // answer to command
-                    torturePackage = answerToCommand(receivedPackage);
-
-                    // send package
+                    // prepare package for sending
+                    torturePackage = preparePackageForSending();
                     oos.writeObject(torturePackage);
-
                     oos.flush();
-                }
-                else if (requestedMusic != null ) {
-
-                }
-
-            } catch (IOException e) {
-                manager.removeClientHandler(this);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-    }
 
 
-
-    private Package answerToCommand(Package receivedPackage) throws IOException {
-        synchronized (lock) {
-
-            ArrayList<Music> requestedSharedMusic = new ArrayList<>();
-            byte[] data = new byte[0];
-            boolean end = true;
-
-            for (Command c :
-                    receivedPackage.getRequest()) {
-
-                switch (c) {
-                    case SHAREDMUSIC:
-                        requestedSharedMusic = user.getLibrary().getSharedList().getMusic();
-                        break;
-                    case DOWNLOAD:
-                        data = download(receivedPackage.getGetMusic());
-                        end = data.length == 0;
-                        break;
+                } catch (IOException e) {
+                    manager.removeClientHandler(this);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (InvalidDataException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedTagException e) {
+                    e.printStackTrace();
                 }
             }
 
-            return new Package(commands,
-                    requestedSharedMusic,
-                    downloadMusic, data, end);
-        }
-    }
-
-
-
-    private byte[] download(Music music) throws IOException {
-        // prepare file
-        if ( requestedMusic == null ) {
-            requestedMusic = new DownloadFile(music.getMediaFile());
-            requestedMusic.prepareForSending();
-        }
-
-        if ( !requestedMusic.isEnd() ) {
-            return requestedMusic.getPartOfData();
-        }
-        else {
-            byte[] temp = requestedMusic.getPartOfData();
-            requestedMusic = null;
-            return temp;
-        }
-    }
-
-
-
-    private void getDataFromPackage(Package receivedPackage) throws IOException {
-        if ( newMusic == null ) {
-            System.out.println(downloadMusic);
-            newMusic = new SaveDownload(user.getName(),
-                    downloadMusic.getMediaFile().getName());
-        }
-
-        if ( !receivedPackage.isEndDownload()) {
-            newMusic.saveData(receivedPackage.getData());
-        } else {
-            newMusic.end();
-            newMusic = null;
         }
 
     }
 
-    public Socket getClient() {
-        return client;
+    private void extractPackage(Package receivedPackage) throws InvalidDataException, IOException, UnsupportedTagException {
+        sharedList = receivedPackage.getSharedMusic();
+        requestedMusic = receivedPackage.getGetMusic();
+        getDataFromPackage(receivedPackage);
+    }
+
+
+    private Package preparePackageForSending() throws IOException {
+        // sharedMusic
+        ArrayList<Music> sharedMusic = user.getLibrary().getSharedList().getMusic();
+
+        // download music
+        Music temp = null;
+        if ( downloadMusic != null) {
+            temp = downloadMusic;
+            downloadMusic = null;
+        }
+
+        // prepare data
+        byte[] data = sendDataOfMusic();
+
+        return new Package(sharedMusic, temp, data);
+
+    }
+
+
+
+    private byte[] sendDataOfMusic() throws IOException {
+
+        if (requestedMusic != null ) {
+
+            // prepare data of music for sending music (for first time)
+            if ( preparationOfRequestedMusic == null ) {
+                preparationOfRequestedMusic = new DownloadFile(requestedMusic.getMediaFile());
+                preparationOfRequestedMusic.prepareForSending();
+            }
+
+            if ( !preparationOfRequestedMusic.isEnd() ) {
+                return preparationOfRequestedMusic.getPartOfData();
+            }
+            else {
+                requestedMusic = null;
+                preparationOfRequestedMusic = null;
+                return new byte[0];
+            }
+        }
+        return new byte[0];
+    }
+
+
+
+    private void getDataFromPackage(Package receivedPackage) throws IOException, InvalidDataException, UnsupportedTagException {
+        if ( downloadMusic != null ) {
+
+            // prepare file for saving music (for first time)
+            if ( fileOfDownloadMusic == null ) {
+                fileOfDownloadMusic = new SaveDownload(user.getName(),
+                        downloadMusic.getMediaFile().getName());
+            }
+
+
+            if ( receivedPackage.getData().length != 0 ) {
+                fileOfDownloadMusic.saveData(receivedPackage.getData());
+            } else {
+
+                fileOfDownloadMusic.end();
+                downloadMusic = null;
+
+                // add to library
+                user.getLibrary().addMediaToLibrary( new Music(fileOfDownloadMusic.getDownloadFile(),
+                        new Time(System.currentTimeMillis())) );
+
+                fileOfDownloadMusic = null;
+            }
+        }
+
     }
 }

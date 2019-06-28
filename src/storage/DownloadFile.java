@@ -12,7 +12,7 @@ public class DownloadFile {
     private boolean ready = false;
     private final int MB = 1024 * 1024;
 
-    public DownloadFile(File file) throws FileNotFoundException {
+    public DownloadFile(File file) {
         this.file = file;
     }
 
@@ -46,8 +46,8 @@ public class DownloadFile {
         return data;
     }
 
-    public byte[] getPartOfData() throws IOException {
-        byte[] temp = new byte[0];
+    public byte[] getPartOfData() {
+        byte[] temp = null; // TODO: 6/28/2019 null is here. be careful
         if ( partNumber >= 0 && partNumber < data.size() ) {
 
             if ( partNumber == data.size()-1 ) { // last part : data.size() - 1

@@ -337,7 +337,7 @@ final class LayerIIIDecoder implements FrameDecoder
   	        //}
   	        //else if (counter == 609)
   	        //{
-  	        //    buffer.close();
+  	        //    buffer.shutdownManager();
   	        //    counter++;
   	        //}
   	        //else

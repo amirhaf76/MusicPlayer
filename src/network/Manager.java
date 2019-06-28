@@ -23,7 +23,7 @@ public class Manager extends Thread {
 
     @Override
     public void run() {
-
+        System.out.println("Running manager ...");
         while ( !closed ) {
             synchronized (lock) {
                 for (ClientHandler cH :
@@ -32,7 +32,7 @@ public class Manager extends Thread {
                 }
             }
         }
-
+        System.out.println("check");
     }
 
     public void addClientHandler(InetAddress ip,ClientHandler cH) {
@@ -48,21 +48,28 @@ public class Manager extends Thread {
     }
 
     public void removeClientHandler(ClientHandler clientHandler) {
-        InetAddress inetAddress = clientHandler.getClient().getInetAddress();
-        clientHandlerHashMap.remove(inetAddress);
+        synchronized (lock) {
+            InetAddress inetAddress = clientHandler.getClient().getInetAddress();
+            clientHandlerHashMap.remove(inetAddress);
+        }
     }
 
-    public void close() throws IOException {
+    public void shutdownManager() throws IOException {
         synchronized (lock) {
-            pool.shutdown();
+            if ( this.getState() == State.RUNNABLE ) {
 
-            for (ClientHandler cH :
-                    clientHandlerHashMap.values()) {
-                cH.closeHandler();
+                this.stop();
+
+                pool.shutdown();
+
+                for (ClientHandler cH :
+                        clientHandlerHashMap.values()) {
+                    cH.closeHandler();
+                }
+                server.stop();
+                server.close();
+                closed = true;
             }
-            server.stop();
-            server.close();
-            closed = true;
         }
     }
 

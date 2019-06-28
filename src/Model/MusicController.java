@@ -108,7 +108,7 @@ public class MusicController extends MusicPlayer {
 //        runPlayer.setDaemon(true);
         runPlayer.setPriority(Thread.MAX_PRIORITY);
 
-        runPlayer.start(); // if song reach to the end, player close buffer
+        runPlayer.start(); // if song reach to the end, player shutdownManager buffer
 
     }
 

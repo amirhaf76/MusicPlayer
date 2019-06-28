@@ -1,9 +1,10 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Artist {
+public class Artist implements Serializable {
     private final String name;
     private ArrayList<Album> albums = new ArrayList<>();
     private Album unknown = new Album("Unknown", this);

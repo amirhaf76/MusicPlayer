@@ -22,10 +22,10 @@ public class ClientHandler implements Runnable {
     private final Object lock = new Object();
 
 
-    private DownloadFile requestedMusic;
+    private volatile DownloadFile requestedMusic;
 
-    private SaveDownload newMusic;
-    private Music getMusic;
+    private volatile SaveDownload newMusic;
+    private volatile Music downloadMusic;
 
     private ArrayList<Command> commands = new ArrayList<>();
 
@@ -47,32 +47,40 @@ public class ClientHandler implements Runnable {
     }
 
     public void downloadMusic(Music music) {
-        if ( !commands.contains(Command.DOWNLOAD) ) {
-            commands.add(Command.DOWNLOAD);
+        synchronized (lock) {
+            if ( downloadMusic == null ) {
+
+                if ( !commands.contains(Command.DOWNLOAD) ) {
+                    commands.add(Command.DOWNLOAD);
+                }
+                downloadMusic = music;
+            }
         }
-        getMusic = music;
     }
 
     public void requestSharedMusic() {
-        if ( !commands.contains(Command.SHAREDMUSIC) ) {
-            commands.add(Command.SHAREDMUSIC);
+        synchronized (lock) {
+            if ( !commands.contains(Command.SHAREDMUSIC) ) {
+                commands.add(Command.SHAREDMUSIC);
+            }
         }
     }
 
     @Override
     public void run() {
 
-        synchronized (lock) {
-            if ( !client.isClosed() ){
 
-                try {
-                    Package receivedPackage;
-                    Package torturePackage;
+        if ( !client.isClosed() ){
 
+            try {
+                Package receivedPackage;
+                Package torturePackage;
+                if (ois.available()>0) {
                     receivedPackage = (Package) ois.readObject();
-
                     // get data from package
-                    getDataFromPackage(receivedPackage);
+                    if ( downloadMusic != null ) {
+                        getDataFromPackage(receivedPackage);
+                    }
 
                     // answer to command
                     torturePackage = answerToCommand(receivedPackage);
@@ -81,12 +89,17 @@ public class ClientHandler implements Runnable {
                     oos.writeObject(torturePackage);
 
                     oos.flush();
-
-
-                } catch (IOException | ClassNotFoundException e) {
-                    manager.removeClientHandler(this);
                 }
+                else if (requestedMusic != null ) {
+
+                }
+
+            } catch (IOException e) {
+                manager.removeClientHandler(this);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
+
         }
 
     }
@@ -94,28 +107,30 @@ public class ClientHandler implements Runnable {
 
 
     private Package answerToCommand(Package receivedPackage) throws IOException {
+        synchronized (lock) {
 
-        ArrayList<Music> requestedSharedMusic = new ArrayList<>();
-        byte[] data = new byte[0];
-        boolean end = true;
+            ArrayList<Music> requestedSharedMusic = new ArrayList<>();
+            byte[] data = new byte[0];
+            boolean end = true;
 
-        for (Command c :
-                receivedPackage.getRequest()) {
+            for (Command c :
+                    receivedPackage.getRequest()) {
 
-            switch (c) {
-                case SHAREDMUSIC:
-                    requestedSharedMusic = user.getLibrary().getSharedList().getMusic();
-                    break;
-                case DOWNLOAD:
-                    data = download(receivedPackage.getGetMusic());
-                    end = data.length == 0;
-                    break;
+                switch (c) {
+                    case SHAREDMUSIC:
+                        requestedSharedMusic = user.getLibrary().getSharedList().getMusic();
+                        break;
+                    case DOWNLOAD:
+                        data = download(receivedPackage.getGetMusic());
+                        end = data.length == 0;
+                        break;
+                }
             }
-        }
 
-        return new Package(commands,
-                requestedSharedMusic,
-                getMusic, data, end);
+            return new Package(commands,
+                    requestedSharedMusic,
+                    downloadMusic, data, end);
+        }
     }
 
 
@@ -140,9 +155,10 @@ public class ClientHandler implements Runnable {
 
 
     private void getDataFromPackage(Package receivedPackage) throws IOException {
-        if ( newMusic != null ) {
+        if ( newMusic == null ) {
+            System.out.println(downloadMusic);
             newMusic = new SaveDownload(user.getName(),
-                    getMusic.getMediaFile().getName());
+                    downloadMusic.getMediaFile().getName());
         }
 
         if ( !receivedPackage.isEndDownload()) {

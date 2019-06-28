@@ -24,10 +24,9 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = 1398441L;
 
-    public User(String name, String password) throws UnknownHostException {
+    public User(String name, String password) {
         this.name = name;
         this.password = password;
-        this.ip = InetAddress.getByName(name);
     }
 
     public void runNetWork() throws IOException {

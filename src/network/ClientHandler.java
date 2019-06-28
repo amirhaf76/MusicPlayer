@@ -80,6 +80,8 @@ public class ClientHandler implements Runnable {
                     // send package
                     oos.writeObject(torturePackage);
 
+                    oos.flush();
+
 
                 } catch (IOException | ClassNotFoundException e) {
                     manager.removeClientHandler(this);
@@ -98,7 +100,7 @@ public class ClientHandler implements Runnable {
         boolean end = true;
 
         for (Command c :
-                receivedPackage.getCommands()) {
+                receivedPackage.getRequest()) {
 
             switch (c) {
                 case SHAREDMUSIC:

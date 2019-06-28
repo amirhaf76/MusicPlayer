@@ -22,8 +22,8 @@ public class NetWork {
 
     public void runNetwork() throws IOException {
         manager.addClientHandler( makeConnection(user.getFriends()) );
-        manager.run();
-        manager.getServer().run();
+        manager.start();
+        manager.getServer().start();
     }
 
 
@@ -53,7 +53,9 @@ public class NetWork {
         manager.close();
     }
 
-
+    public Manager getManager() {
+        return manager;
+    }
 
     public User getUser() {
         return user;

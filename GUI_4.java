@@ -1,9 +1,14 @@
+import Model.List;
+import Model.User;
+
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class GUI_4 extends javax.swing.JFrame {
 
 
-    public GUI_4() {
+    public GUI_4(User user) {
+        this.user = user;
         initComponents();
     }
 
@@ -79,7 +84,16 @@ public class GUI_4 extends javax.swing.JFrame {
     }
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        String name = playlistname.getText().trim();
+        for (List list :
+                user.getLibrary().getPlayList()) {
+
+            if (list.getName().equals(name)) {
+                name = name + '(' + 1 + ')';
+            }
+        }
+        user.getLibrary().addPlaylist(new Model.List(name));
+        setVisible(false);
     }
 
     private void playlistnameActionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,9 +101,10 @@ public class GUI_4 extends javax.swing.JFrame {
     }
 
 
-
+    private User user;
     private javax.swing.JButton add;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField playlistname;
+
 }

@@ -1,13 +1,18 @@
+import Model.Jpotify;
+import Model.User;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BoxLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 
 public class GUI_1 {
+    private Model.Jpotify jpotify;
     public GUI_1() {
         JFrame Jpotify = new JFrame("Jpotify");
         Jpotify.setResizable(false);
@@ -97,18 +102,64 @@ public class GUI_1 {
         Signin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GUI_2 GUI_2 = new GUI_2();
-                Jpotify.setVisible(false);
+                String name = Userin.getText();
+                System.out.println(Userin.getText());
+                String password = new String(Passin.getPassword());
+                name = name.trim();
+                password = password.trim();
+
+                for (User user :
+                        jpotify.getUsers()) {
+                    System.out.println(user);
+                    System.out.println(user.canPass(password));
+                    if ( user.getName().equals(name) ) {
+                        System.out.println("here");
+                        if ( user.canPass(password) ) {
+                            System.out.println("2");
+                            GUI_2 GUI_2 = new GUI_2(user);
+                            Jpotify.setVisible(false);
+                        }
+                    }
+                }
+                // TODO: 6/28/2019 error in password or username
             }
         });
         Signup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GUI_2 GUI_2 = new GUI_2();
-                Jpotify.setVisible(false);
+                boolean same = false;
+                try {
+                    String name = Userup.getText();
+                    String password = new String(Passup.getPassword());
+                    name = name.trim();
+                    password = password.trim();
+
+                    if ( !name.equals("") && !password.equals("") ) {
+                        User newUser = new User(name, password);
+                        System.out.println(newUser);
+                        for (User user :
+                                jpotify.getUsers()) {
+                            same = user.equals(newUser);
+                        }
+                        if ( !same ) {
+                            System.out.println("accept");
+                            jpotify.addUser(newUser);
+                            GUI_2 GUI_2 = new GUI_2(newUser);
+                            Jpotify.setVisible(false);
+                        } else {
+                            // TODO: 6/28/2019 error if same is true
+                        }
+                    }
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
         Jpotify.pack();
     }
 
+    public void setJpotify(Jpotify jpotify) {
+        this.jpotify = jpotify;
+    }
 }

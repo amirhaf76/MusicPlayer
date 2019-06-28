@@ -1,17 +1,21 @@
 import java.awt.*;
+import java.util.ArrayList;
 
+import Model.Jpotify;
+import Model.List;
+import Model.Media;
+import Model.Music;
+import Model.User;
 import javafx.stage.FileChooser;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+
+import javax.swing.*;
 
 
 public class GUI_2 extends javax.swing.JFrame {
 
-
-
-    public GUI_2() {
+    private User user;
+    public GUI_2(User user) {
+        this.user = user;
         initComponents();
     }
 
@@ -123,7 +127,8 @@ public class GUI_2 extends javax.swing.JFrame {
 
         username.setFont(new java.awt.Font("Tahoma", 0, 18));
         username.setForeground(new java.awt.Color(0, 204, 51));
-        username.setText("AminRezai2000");
+        username.setText(this.user.getName());
+        username.setHorizontalAlignment(SwingConstants.CENTER);
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 18));
         jLabel7.setForeground(new java.awt.Color(0, 204, 51));
@@ -626,7 +631,25 @@ public class GUI_2 extends javax.swing.JFrame {
     }// </editor-fold>
 
     private void playlistsActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        String[] names = new String[user.getLibrary().getPlayList().size()];
+        ArrayList<Model.List> lists = user.getLibrary().getPlayList();
+        for(int i = 0; i < user.getLibrary().getPlayList().size(); i++ ) {
+            names[i] = lists.get(i).getName();
+        }
+        List.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = names;
+            @Override
+            public int getSize() {
+                return strings.length;
+            }
+
+            @Override
+            public String getElementAt(int index) {
+                return strings[index];
+            }
+
+        });
+        title.setText("PlayLists");
     }
 
     private void favoritesActionPerformed(java.awt.event.ActionEvent evt) {
@@ -681,7 +704,7 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void addplaylistMouseClicked(java.awt.event.MouseEvent evt) {
-        GUI_4 GUI_4 = new GUI_4();
+        GUI_4 GUI_4 = new GUI_4(user);
     }
 
     private void addtoplaylistMouseClicked(java.awt.event.MouseEvent evt) {
@@ -709,7 +732,25 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void libraryMouseClicked(java.awt.event.MouseEvent evt) {
-        // TODO add your handling code here:
+        String[] names = new String[user.getLibrary().getMedium().size()];
+        ArrayList<Media> musics = user.getLibrary().getMedium();
+        for(int i = 0; i < user.getLibrary().getMedium().size(); i++ ) {
+            names[i] = musics.get(i).getName();
+        }
+        List.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = names;
+            @Override
+            public int getSize() {
+                return strings.length;
+            }
+
+            @Override
+            public String getElementAt(int index) {
+                return strings[index];
+            }
+
+        });
+        title.setText("Library");
     }
 
     private void searchmusicbuttonMouseClicked(java.awt.event.MouseEvent evt) {
@@ -815,3 +856,4 @@ public class GUI_2 extends javax.swing.JFrame {
     private javax.swing.JPanel west;
     private javax.swing.JPanel window;
 }
+

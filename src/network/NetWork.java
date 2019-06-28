@@ -50,7 +50,7 @@ public class NetWork {
     }
 
     public void closeNetwork() throws IOException {
-        manager.close();
+        manager.shutdownManager();
     }
 
     public Manager getManager() {

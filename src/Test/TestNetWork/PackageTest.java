@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("Duplicates")
 class PackageTest {
     private Package aPackage;
     private ArrayList<Music> musics = new ArrayList<>();

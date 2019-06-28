@@ -9,6 +9,13 @@ import java.util.ArrayList;
 public class Jpotify {
     private ArrayList<User> users = new ArrayList<>();
 
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
     public static void sortByArtist(ArrayList<Media> medium) {
         medium.sort(new SortByArtist() );
     }

@@ -12,6 +12,14 @@ public class Library implements Serializable {
 
     private static final long serialVersionUID = 139843L;
 
+    public void addPlaylist(List list) {
+        playList.add(list);
+    }
+
+    public void removePlayList(List list) {
+        playList.remove(list);
+    }
+
     public void addMediaToLibrary(Media media) {
         medium.add(media);
     }

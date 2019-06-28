@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class User implements Serializable {
 
@@ -27,7 +28,7 @@ public class User implements Serializable {
     public User(String name, String password) throws IOException {
         this.name = name;
         this.password = password;
-        netWork = new NetWork(this);
+//        netWork = new NetWork(this);
     }
 
     public String getName() {
@@ -64,5 +65,26 @@ public class User implements Serializable {
 
     public ArrayList<InetAddress> getFriends() {
         return friends;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", ip=" + ip +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return name.equals(user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

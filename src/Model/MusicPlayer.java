@@ -6,6 +6,8 @@ public class MusicPlayer {
 
     private ArrayList<Music> musics = new ArrayList<>();
 
+    private final Object lock = new Object();
+
     // TODO: 6/24/2019 add lock to for adding and removing music
     public void addMusic(Media media) {
 
@@ -15,6 +17,10 @@ public class MusicPlayer {
                 musics.add((Music) media);
             }
         }
+    }
+
+    public Object getLock() {
+        return lock;
     }
 
     public void addMusic(ArrayList<Music> medium) {

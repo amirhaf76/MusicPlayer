@@ -32,7 +32,7 @@ public class MusicController extends MusicPlayer {
     private int lastFrame = 0;
 
     // controlling
-    private final Object lock = new Object(); // make player lock
+    private final Object lock = super.getLock(); // make player lock
     private Control command;
 
 

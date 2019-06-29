@@ -2,11 +2,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import Model.Jpotify;
+import Model.*;
 import Model.List;
-import Model.Media;
-import Model.Music;
-import Model.User;
 import Model.enumeration.Control;
 import javazoom.jl.decoder.JavaLayerException;
 import mp3agic.InvalidDataException;
@@ -14,14 +11,20 @@ import mp3agic.UnsupportedTagException;
 
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 @SuppressWarnings("Duplicates")
 public class GUI_2 extends javax.swing.JFrame {
 
     private User user;
-    public GUI_2(User user) {
+    private Jpotify jpotify;
+    public GUI_2(User user, Jpotify jpotify) {
         this.user = user;
+        this.jpotify = jpotify;
         initComponents();
 
     }
@@ -336,6 +339,33 @@ public class GUI_2 extends javax.swing.JFrame {
         south.setBackground(new java.awt.Color(51, 51, 51));
 
         timebar.setForeground(new java.awt.Color(0, 204, 51));
+        timebar.setMaximum(100);
+        timebar.setMinimum(0);
+        timebar.setSnapToTicks(true);
+
+//        timebar.setMajorTickSpacing(10);
+//        timebar.setMinorTickSpacing(1);
+//        timebar.addChangeListener(new ChangeListener() {
+//            @Override
+//            public void stateChanged(ChangeEvent e) {
+//                System.out.println(e);
+//                JSlider slider = (JSlider) e.getSource();
+//                try {
+//                    timebar.setValue(slider.getValue());
+//                    user.getMusicController().skipMusic(slider.getValue());
+//                } catch (IOException e1) {
+//                    e1.printStackTrace();
+//                } catch (JavaLayerException e1) {
+//                    e1.printStackTrace();
+//                } catch (InterruptedException e1) {
+//                    e1.printStackTrace();
+//                } catch (InvalidDataException e1) {
+//                    e1.printStackTrace();
+//                } catch (UnsupportedTagException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//        });
 
         volume.setBackground(new java.awt.Color(0, 204, 51));
 
@@ -698,7 +728,7 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void browseMouseClicked(java.awt.event.MouseEvent evt) {
-        GUI_3 GUI_3 = new GUI_3();
+        GUI_3 GUI_3 = new GUI_3(user, jpotify);
     }
 
     private void searchmusictextfieldActionPerformed(java.awt.event.ActionEvent evt) {
@@ -907,8 +937,11 @@ public class GUI_2 extends javax.swing.JFrame {
 
                         try {
                             if ( media instanceof Music) {
-                                Image image = new ImageIcon(((Music) media).getImageAlbum()).getImage();
-                                music_pic.setIcon( new ImageIcon(image.getScaledInstance(166,166, Image.SCALE_DEFAULT)) );
+                                if ( ((Music) media).getImageAlbum().length > 0) {
+                                    Image image = new ImageIcon(((Music) media).getImageAlbum()).getImage();
+                                    music_pic.setIcon( new ImageIcon(image.getScaledInstance(166,166, Image.SCALE_DEFAULT)) );
+                                }
+
 
                                 artwork.setText( ((Music)media).toString() );
                                 user.getMusicController().selectMusic((Music) media, lastList);
@@ -918,6 +951,9 @@ public class GUI_2 extends javax.swing.JFrame {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+
+
+
                         if (user.getMusicController().getCommand().equals(Control.PLAYING)) {
 
                             play.setIcon(new javax.swing.ImageIcon("pause-button.png"));
@@ -940,6 +976,7 @@ public class GUI_2 extends javax.swing.JFrame {
     private ArrayList<Model.List> lastLists;
 
     private JScrollPane jScrollPane;
+
 
     private javax.swing.JLabel AKS;
     private javax.swing.JList<String> List;

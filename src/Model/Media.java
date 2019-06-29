@@ -3,6 +3,7 @@ package Model;
 import java.io.File;
 import java.io.Serializable;
 import java.sql.Time;
+import java.util.Objects;
 
 public class Media implements Serializable {
     private final File mediaFile;
@@ -39,5 +40,18 @@ public class Media implements Serializable {
 
     public void setLastTime(Time lastTime) {
         this.lastTime = lastTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Media media = (Media) o;
+        return mediaFile.equals(media.mediaFile);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mediaFile);
     }
 }

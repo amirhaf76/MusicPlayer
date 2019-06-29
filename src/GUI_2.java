@@ -7,10 +7,12 @@ import Model.List;
 import Model.Media;
 import Model.Music;
 import Model.User;
+import Model.enumeration.Control;
 import javazoom.jl.decoder.JavaLayerException;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
 
+import javax.print.attribute.standard.MediaPrintableArea;
 import javax.swing.*;
 
 
@@ -230,11 +232,11 @@ public class GUI_2 extends javax.swing.JFrame {
         playlists.setForeground(new java.awt.Color(0, 204, 51));
         playlists.setText("Playlists");
         playlists.setBorder(null);
-        playlists.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                playlistsMouseClicked(evt);
-            }
-        });
+//        playlists.addMouseListener(new java.awt.event.MouseAdapter() {
+//            public void mouseClicked(java.awt.event.MouseEvent evt) {
+//                playlistsMouseClicked(evt);
+//            }
+//        });
         playlists.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playlistsActionPerformed(evt);
@@ -519,6 +521,11 @@ public class GUI_2 extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        List.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                playlistsMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(List);
 
         title.setFont(new java.awt.Font("Tahoma", 0, 18));
@@ -618,16 +625,23 @@ public class GUI_2 extends javax.swing.JFrame {
                                 .addGap(0, 0, 0))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(window, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(window, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+//        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+//        getContentPane().setLayout(layout);
+//        layout.setHorizontalGroup(
+//                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                        .addComponent(window, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//        );
+//        layout.setVerticalGroup(
+//                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+//                        .addComponent(window, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//        );
+
+        jScrollPane = new JScrollPane(window);
+        jScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane.setVerticalScrollBar(jScrollPane.getVerticalScrollBar());
+        jScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        jScrollPane.setHorizontalScrollBar(jScrollPane.getHorizontalScrollBar());
+        this.add(jScrollPane);
 
         pack();
         window.getBaselineResizeBehavior();
@@ -638,6 +652,7 @@ public class GUI_2 extends javax.swing.JFrame {
     }// </editor-fold>
 
     private void playlistsActionPerformed(java.awt.event.ActionEvent evt) {
+        System.out.println(2);
         String[] names = new String[user.getLibrary().getPlayList().size()];
         ArrayList<Model.List> lists = user.getLibrary().getPlayList();
         for(int i = 0; i < user.getLibrary().getPlayList().size(); i++ ) {
@@ -656,6 +671,7 @@ public class GUI_2 extends javax.swing.JFrame {
             }
 
         });
+        lastLists = lists; // !!!!!!!!!!!!!!!!!!!
         title.setText("PlayLists");
     }
 
@@ -692,7 +708,7 @@ public class GUI_2 extends javax.swing.JFrame {
     }
     public int playButtonStatus=0;
     private void playMouseClicked(java.awt.event.MouseEvent evt) {
-        if (playButtonStatus==0)
+        if ( !user.getMusicController().getCommand().equals(Control.PLAYING) )
         {
             if ( user.getMusicController().getMusics().size() > 0 ) {
                 try {
@@ -706,10 +722,8 @@ public class GUI_2 extends javax.swing.JFrame {
             play.setBorder(null);
         }
         else {
-            try {
-                user.getMusicController().start();
-            } catch (IOException | JavaLayerException | InvalidDataException | UnsupportedTagException e) {
-                System.out.println("error in stopping music");
+            if ( user.getMusicController().getMusics().size() > 0 ) {
+                user.getMusicController().pause();
             }
             playButtonStatus=0;
             play.setIcon(new javax.swing.ImageIcon("play-button.png"));
@@ -727,7 +741,12 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void addtoplaylistMouseClicked(java.awt.event.MouseEvent evt) {
-        GUI_5 GUI_5 = new GUI_5();
+        for (Media media :
+                lastList) {
+            if (media.getName().equals(List.getSelectedValue())) {
+                GUI_5 GUI_5 = new GUI_5(user, media);
+            }
+        }
     }
 
     private void addfavoriteMouseClicked(java.awt.event.MouseEvent evt) {
@@ -747,7 +766,63 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void playlistsMouseClicked(java.awt.event.MouseEvent evt) {
-        // TODO add your handling code here:
+        System.out.println(1);
+        if ( lastLists != null ) {
+            for (List list :
+                    lastLists) {
+                if ( list.getName().equals(List.getSelectedValue()) ) {
+
+                    List.setModel(new AbstractListModel<String>() {
+                        ArrayList<Music> presentList = list.getMusic();
+                        @Override
+                        public int getSize() {
+                            return presentList.size();
+                        }
+
+                        @Override
+                        public String getElementAt(int index) {
+                            return presentList.get(index).getTitle();
+                        }
+                    });
+                    title.setText(list.getName());
+                    break;
+                }
+            }
+        }
+
+        if ( lastList != null ) {
+
+            for (Media media :
+                    lastList) {
+                if (media.getName().equals(List.getSelectedValue())) {
+                    if ( !doubleClick .equals(List.getSelectedValue()) ) {
+                        doubleClick = List.getSelectedValue();
+                        break;
+                    } else if ( doubleClick.equals(List.getSelectedValue()) ) {
+                        doubleClick = "***???";
+
+                        try {
+
+                            user.getMusicController().selectMusic((Music) media, lastList);
+                        } catch (JavaLayerException | UnsupportedTagException | InvalidDataException | IOException e) {
+                            System.out.println("Error in playing");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (user.getMusicController().getCommand().equals(Control.PLAYING)) {
+
+                            play.setIcon(new javax.swing.ImageIcon("pause-button.png"));
+                            play.setBorder(null);
+                        }
+                        else {
+                            play.setIcon(new javax.swing.ImageIcon("play-button.png"));
+                            play.setBorder(null);
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     private void libraryMouseClicked(java.awt.event.MouseEvent evt) {
@@ -769,6 +844,7 @@ public class GUI_2 extends javax.swing.JFrame {
             }
 
         });
+        lastList = musics;
         title.setText("Library");
     }
 
@@ -828,6 +904,11 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
 
+    private String doubleClick = "";
+    private ArrayList<Model.Media> lastList;
+    private ArrayList<Model.List> lastLists;
+
+    private JScrollPane jScrollPane;
 
     private javax.swing.JLabel AKS;
     private javax.swing.JList<String> List;

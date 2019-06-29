@@ -28,6 +28,7 @@ public class MusicController extends MusicPlayer {
     // player
     private MachinePlayer player;
 
+
     // frames and time
     private int lastFrame = 0;
 
@@ -156,10 +157,7 @@ public class MusicController extends MusicPlayer {
 
     public void stop() {
         synchronized (lock) {
-            if (command.equals(Control.PLAYING) ||
-                    command.equals(Control.PAUSE)) {
-                command = Control.STOP;
-            }
+            command = Control.STOP;
         }
     }
 
@@ -248,10 +246,33 @@ public class MusicController extends MusicPlayer {
         }
     }
 
+    public Control getCommand() {
+        return command;
+    }
+
     public long calculateLastTime() {
         return (lastFrame * presentMusic.getTime())/ presentMusic.getFrames();
     }
 
+    public void selectMusic(Music music, ArrayList<Media> medium) throws JavaLayerException, UnsupportedTagException, InvalidDataException, IOException, InterruptedException {
+
+        this.stop();
+        Thread.sleep(1000);
+
+        if ( !medium.equals(super.getMusics()) ) {
+            super.removeAllMusics();
+            super.addMusic(medium);
+        }
+        for (Music m :
+                super.getMusics()) {
+            if ( m.equals(music) ) {
+                presentMusic = m;
+                System.out.println(55);
+            }
+        }
+
+        this.start();
+    }
 
     private void prepareMusic(Music music) throws IOException, JavaLayerException, InvalidDataException, UnsupportedTagException { // totally
         synchronized (lock) {

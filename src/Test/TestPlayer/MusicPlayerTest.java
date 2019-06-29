@@ -41,7 +41,6 @@ class MusicPlayerTest {
         assertEquals(1,musicPlayer.getMusics().size());
         musicPlayer.addMusic(music1);
         assertEquals(1,musicPlayer.getMusics().size());
-        musicPlayer.addMusic(musics);
         assertEquals(2, musicPlayer.getMusics().size());
         assertTrue(musicPlayer.getMusics().contains(music1));
         assertTrue(musicPlayer.getMusics().contains(music2));

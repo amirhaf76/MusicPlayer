@@ -23,7 +23,7 @@ public class MusicPlayer {
         return lock;
     }
 
-    public void addMusic(ArrayList<Music> medium) {
+    public void addMusic(ArrayList<Media> medium) {
         synchronized (lock) {
             for (Media m : // for all medium
                     medium) {
@@ -34,7 +34,9 @@ public class MusicPlayer {
     }
 
     public void removeAllMusics() {
-        musics.removeAll(musics.subList(0, musics.size()));
+        synchronized (lock) {
+            musics.removeAll(musics.subList(0, musics.size()));
+        }
     }
 
     public ArrayList<Music> getMusics() {

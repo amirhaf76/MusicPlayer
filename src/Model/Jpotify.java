@@ -37,7 +37,7 @@ public class Jpotify implements Serializable {
     public void loadUser() {
         for (User u :
                 users) {
-            u.setLibrary(new Library());
+            u.setMusicController(new MusicController());
         }
     }
 }

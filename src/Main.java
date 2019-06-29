@@ -37,6 +37,7 @@ public class Main{
         try {
             file = new File("Jpotify.j");
             jpotify = ReloadFile.loadJpotify(file);
+            jpotify.loadUser();
 
 
             GUI_1 GUI_1 = new GUI_1();

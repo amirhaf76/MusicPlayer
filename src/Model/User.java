@@ -34,6 +34,10 @@ public class User implements Serializable {
         this.library = new Library();
     }
 
+    public void setMusicController(MusicController musicController) {
+        this.musicController = musicController;
+    }
+
     public String getName() {
         return name;
     }

@@ -52,7 +52,7 @@ public class GUI_2 extends javax.swing.JFrame {
         artwork = new javax.swing.JTextArea();
         addplaylist = new javax.swing.JButton();
         south = new javax.swing.JPanel();
-        timebar = new javax.swing.JProgressBar();
+        timebar = new javax.swing.JSlider();
         volume = new javax.swing.JSlider();
         jLabel4 = new javax.swing.JLabel();
         play = new javax.swing.JButton();
@@ -263,6 +263,7 @@ public class GUI_2 extends javax.swing.JFrame {
             }
         });
 
+        music_pic.setHorizontalAlignment((int)CENTER_ALIGNMENT);
         artwork.setEditable(false);
         artwork.setBackground(new java.awt.Color(51, 51, 51));
         artwork.setColumns(20);
@@ -676,7 +677,20 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void favoritesActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        List.setModel(new AbstractListModel<String>() {
+            Model.List favorites = user.getLibrary().getFavorites();
+            @Override
+            public int getSize() {
+                return favorites.getMusic().size();
+            }
+
+            @Override
+            public String getElementAt(int index) {
+                return favorites.getMusic().get(index).getTitle();
+            }
+        });
+        lastList = user.getLibrary().getFavorites().getMedium();
+        title.setText("Favorites");
     }
 
     private void browseActionPerformed(java.awt.event.ActionEvent evt) {
@@ -750,7 +764,15 @@ public class GUI_2 extends javax.swing.JFrame {
     }
 
     private void addfavoriteMouseClicked(java.awt.event.MouseEvent evt) {
-        // TODO add your handling code here:
+        if ( lastList != null ) {
+            for (Media media: lastList) {
+
+                if ( media.getName().equals(List.getSelectedValue()) ) {
+                    user.getLibrary().addMediaToFavorites(media);
+                }
+            }
+
+        }
     }
 
     private void addhareMouseClicked(java.awt.event.MouseEvent evt) {
@@ -790,39 +812,7 @@ public class GUI_2 extends javax.swing.JFrame {
             }
         }
 
-        if ( lastList != null ) {
-
-            for (Media media :
-                    lastList) {
-                if (media.getName().equals(List.getSelectedValue())) {
-                    if ( !doubleClick .equals(List.getSelectedValue()) ) {
-                        doubleClick = List.getSelectedValue();
-                        break;
-                    } else if ( doubleClick.equals(List.getSelectedValue()) ) {
-                        doubleClick = "***???";
-
-                        try {
-
-                            user.getMusicController().selectMusic((Music) media, lastList);
-                        } catch (JavaLayerException | UnsupportedTagException | InvalidDataException | IOException e) {
-                            System.out.println("Error in playing");
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (user.getMusicController().getCommand().equals(Control.PLAYING)) {
-
-                            play.setIcon(new javax.swing.ImageIcon("pause-button.png"));
-                            play.setBorder(null);
-                        }
-                        else {
-                            play.setIcon(new javax.swing.ImageIcon("play-button.png"));
-                            play.setBorder(null);
-                        }
-                    }
-
-                }
-            }
-        }
+        controlSelectedMusic();
     }
 
     private void libraryMouseClicked(java.awt.event.MouseEvent evt) {
@@ -903,6 +893,47 @@ public class GUI_2 extends javax.swing.JFrame {
         }
     }
 
+    private void controlSelectedMusic(){
+        if ( lastList != null ) {
+            for (Media media :
+                    lastList) {
+
+                if (media.getName().equals(List.getSelectedValue())) {
+                    if ( !doubleClick .equals(List.getSelectedValue()) ) {
+                        doubleClick = List.getSelectedValue();
+                        break;
+                    } else if ( doubleClick.equals(List.getSelectedValue()) ) {
+                        doubleClick = "***???";
+
+                        try {
+                            if ( media instanceof Music) {
+                                Image image = new ImageIcon(((Music) media).getImageAlbum()).getImage();
+                                music_pic.setIcon( new ImageIcon(image.getScaledInstance(166,166, Image.SCALE_DEFAULT)) );
+
+                                artwork.setText( ((Music)media).toString() );
+                                user.getMusicController().selectMusic((Music) media, lastList);
+                            }
+                        } catch (JavaLayerException | UnsupportedTagException | InvalidDataException | IOException e) {
+                            System.out.println("Error in playing");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (user.getMusicController().getCommand().equals(Control.PLAYING)) {
+
+                            play.setIcon(new javax.swing.ImageIcon("pause-button.png"));
+                            play.setBorder(null);
+                        }
+                        else {
+                            play.setIcon(new javax.swing.ImageIcon("play-button.png"));
+                            play.setBorder(null);
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
 
     private String doubleClick = "";
     private ArrayList<Model.Media> lastList;
@@ -950,7 +981,7 @@ public class GUI_2 extends javax.swing.JFrame {
     private javax.swing.JButton share;
     private javax.swing.JButton shuffle;
     private javax.swing.JPanel south;
-    private javax.swing.JProgressBar timebar;
+    private javax.swing.JSlider timebar;
     private javax.swing.JLabel timelabel;
     private javax.swing.JLabel title;
     private javax.swing.JLabel username;

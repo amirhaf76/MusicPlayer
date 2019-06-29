@@ -158,4 +158,14 @@ public class Music extends Media {
     public int hashCode() {
         return Objects.hash(title, artist, album);
     }
+
+    @Override
+    public String toString() {
+        return "Title : " + title + '\n' +
+                artist + '\n' +
+                album + '\n' +
+                "Year : " + year + '\n' +
+                "Comment :" + comment + '\n' +
+                "Track :" + track;
+    }
 }

@@ -1,6 +1,8 @@
 package Model;
 
-public class VideoList extends List {
+import java.io.Serializable;
+
+public class VideoList extends List implements Serializable {
 
     public VideoList(String name) {
         super(name);

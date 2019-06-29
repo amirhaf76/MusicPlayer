@@ -1,5 +1,6 @@
 package storage;
 
+import Model.Jpotify;
 import Model.Library;
 import Model.User;
 
@@ -31,5 +32,11 @@ public class ReloadFile {
         ObjectInputStream in = new ObjectInputStream(file);
 
         return (Library) in.readObject();
+    }
+
+    static public Jpotify loadJpotify(File file) throws IOException, ClassNotFoundException {
+        ObjectInputStream oin = new ObjectInputStream( new FileInputStream(file));
+
+        return (Jpotify) oin.readObject();
     }
 }

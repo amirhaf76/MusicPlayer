@@ -6,8 +6,9 @@ import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import java.io.InputStream;
+import java.io.Serializable;
 
-public class MachinePlayer extends Player {
+public class MachinePlayer extends Player implements Serializable {
 
     private Bitstream bitstream;
 

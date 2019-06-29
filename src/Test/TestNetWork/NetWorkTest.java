@@ -2,7 +2,6 @@ package Test.TestNetWork;
 
 import Model.Music;
 import Model.User;
-import Model.enumeration.Command;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
 import network.*;
@@ -38,7 +37,6 @@ class NetWorkTest {
 
     void setUp() throws IOException, InvalidDataException, UnsupportedTagException {
         user = new User("hamid", "1398");
-        netWork = user.getNetWork();
         manager = netWork.getManager();
         server = manager.getServer();
 

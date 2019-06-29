@@ -1,6 +1,8 @@
 package Model.enumeration;
 
-public enum Repetition {
+import java.io.Serializable;
+
+public enum Repetition implements Serializable {
     ALWAYS(7, "Always"), ONCE( 8, "Once"), JUSTTHIS(9, "JustThis");
 
     private int value;

@@ -1,5 +1,6 @@
 package storage;
 
+import Model.Jpotify;
 import Model.User;
 
 import javax.swing.*;
@@ -17,36 +18,20 @@ public class Storage {
         parent = "User:" + user.getName();
     }
 
-    public void makeFile() {
-        File file = new File( parent );
-        if ( !file.isDirectory() ) {
-            if ( !file.mkdir() ) {
+    static public void saveJpotify(Jpotify jpotify) throws IOException {
+        File file = new File("Jpotify.j");
+
+        if ( !file.exists() ) {
+            if ( !file.createNewFile()) {
                 JOptionPane.showMessageDialog( new Frame(),
                         "There is problem in making folder",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
 
-    public void saveUser() throws IOException {
-        FileOutputStream savedFile = new FileOutputStream(
-                new File(parent + "\\" + user.getName() + ".ur")
-        );
+        FileOutputStream savedFile = new FileOutputStream(file);
         ObjectOutputStream out = new ObjectOutputStream(savedFile);
-        out.writeObject(user);
-
-        out.close();
-        savedFile.close();
-
-    }
-
-    public void saveLibrary() throws IOException {
-        FileOutputStream savedFile = new FileOutputStream(
-                new File(parent + "\\" + user.getName() + ".b" )
-        );
-        ObjectOutputStream out = new ObjectOutputStream(savedFile);
-        out.writeObject(user.getLibrary());
-
+        out.writeObject(jpotify);
         out.close();
         savedFile.close();
     }

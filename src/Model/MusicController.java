@@ -13,10 +13,11 @@ import java.util.Random;
 import static Model.enumeration.Control.*;
 import static Model.enumeration.Repetition.*;
 
-public class MusicController extends MusicPlayer {
+public class MusicController extends MusicPlayer implements Serializable {
 
     // file
     private Music presentMusic;
+    private static final long serialVersionUID = 1398869L;
 
     // playing mode
     private int indexOfShuffleMusic = 1;
@@ -30,12 +31,17 @@ public class MusicController extends MusicPlayer {
 
 
     // frames and time
-    private int lastFrame = 0;
+    private volatile int lastFrame = 0;
 
     // controlling
     private final Object lock = super.getLock(); // make player lock
     private Control command;
 
+    public int getLastFrame() {
+        synchronized (lock) {
+            return lastFrame;
+        }
+    }
 
     // constructor
     public MusicController() {
@@ -218,30 +224,32 @@ public class MusicController extends MusicPlayer {
     // based on percentage
     public void skipMusic(int percentage) throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
         if ( percentage >= 0 && percentage <= 100) {
+            if ( presentMusic != null ) {
+                // calculate frame number
+                int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
 
-            // calculate frame number
-            int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
+                Control lastCommand = command;
+                synchronized (lock) {
 
-            Control lastCommand = command;
-            synchronized (lock) {
+                    command = SKIP;
+                    lock.wait();
 
-                command = SKIP;
-                lock.wait();
+                    // prepare music again
+                    prepareMusic(presentMusic);
 
-                // prepare music again
-                prepareMusic(presentMusic);
+                    // skip frames
+                    if ( lastFrame > frameNumber)
+                    lastFrame = frameNumber;
+                    player.skipMusicBasedOnFrame(frameNumber);
 
-                // skip frames
-                lastFrame = frameNumber;
-                player.skipMusicBasedOnFrame(frameNumber);
+                    command = PLAYING;
 
-                command = PLAYING;
-
-                playMusic();
-            }
-            // mode of player
-            if ( lastCommand.equals(PAUSE) ) {
-                pause();
+                    playMusic();
+                }
+                // mode of player
+                if ( lastCommand.equals(PAUSE) ) {
+                    pause();
+                }
             }
         }
     }

@@ -1,12 +1,18 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MusicPlayer {
+public class MusicPlayer implements Serializable {
 
     private ArrayList<Music> musics = new ArrayList<>();
 
-    private final Object lock = new Object();
+    private transient final Object lock;
+
+    public MusicPlayer() {
+        lock = new Object();
+    }
+
 
     public void addMusic(Media media) {
         synchronized (lock) {

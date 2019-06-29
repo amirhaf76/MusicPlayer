@@ -1,6 +1,8 @@
 package Model.enumeration;
 
-public enum Control {
+import java.io.Serializable;
+
+public enum Control implements Serializable {
     PAUSE(0, "Pause"), PLAYING(1, "Playing"),STOP(2, "Stop"),
     NEXT(3, "Next"), PREVIOUS(4, "Previous"),
     NOTSTARTED(5, "NotStart"), FINISH(6, "Finish"),

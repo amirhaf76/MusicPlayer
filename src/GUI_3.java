@@ -1,46 +1,57 @@
+
+
+import Model.Jpotify;
+import Model.Media;
+import Model.Music;
+import Model.User;
+import mp3agic.InvalidDataException;
+import mp3agic.UnsupportedTagException;
+import storage.Storage;
+
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+import javax.swing.plaf.FileChooserUI;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Time;
 
-@SuppressWarnings("Duplicates")
-public class GUI_3 extends javax.swing.JFrame {
+/**
+ *
+ * @author asus
+ */
+public class GUI_3 {
 
+    public GUI_3(User user, Jpotify jpotify)
+    {
 
-    public GUI_3() {
-        initComponents();
+        JFileChooser jFileChooser1 = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        int val = jFileChooser1.showSaveDialog(null);
+        FileFilter filter = new FileNameExtensionFilter("MP3 File","mp3");
+        jFileChooser1.addChoosableFileFilter(filter);
+        if(val ==jFileChooser1.APPROVE_OPTION)
+        {
+            File file = jFileChooser1.getSelectedFile();
+            String adress = file.getAbsolutePath();
+            Music music = null;
+            try {
+                System.out.println(file.getName());
+                music = new Music(file,new Time(System.currentTimeMillis()));
+            } catch (InvalidDataException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (UnsupportedTagException e) {
+                e.printStackTrace();
+            }
+
+            user.getLibrary().addMediaToLibrary(music);
+            try {
+                Storage.saveJpotify(jpotify);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
-    private void initComponents() {
-
-        jPanel1 = new javax.swing.JPanel();
-        jFileChooser1 = new javax.swing.JFileChooser();
-
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        ImageIcon img = new ImageIcon("find-on-page.png");
-        setIconImage(img.getImage());
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jFileChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 902, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jFileChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        setResizable(false);
-        setLocation(400,300);
-        setVisible(true);
-        pack();
-    }
-    private javax.swing.JFileChooser jFileChooser1;
-    private javax.swing.JPanel jPanel1;
 }

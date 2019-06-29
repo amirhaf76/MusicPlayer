@@ -9,7 +9,7 @@ public class Media implements Serializable {
     private final File mediaFile;
     private Time addedTime;
     private Time lastTime; // TODO: 6/25/2019 add to music player
-
+    private static final long serialVersionUID = 139864L;
     public Media(File mediaFile, Time addedTime) {
         this.mediaFile = mediaFile;
         this.addedTime = addedTime;

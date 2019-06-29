@@ -2,6 +2,8 @@ package Model;
 
 
 import network.NetWork;
+import storage.ReloadFile;
+import storage.Storage;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -16,29 +18,26 @@ public class User implements Serializable {
     private String password;
     private InetAddress ip;
 
-    private transient Library library = new Library();
-    private transient NetWork netWork;
+    private Library library = new Library();
     private transient MusicController musicController = new MusicController();
 
-    private transient ArrayList<InetAddress> friends = new ArrayList<>();
+    private ArrayList<InetAddress> friends = new ArrayList<>();
 
 
 
-    private static final long serialVersionUID = 1398441L;
+    private static final long serialVersionUID = 13984987879741L;
 
-    public User(String name, String password) throws IOException {
+    public User(String name, String password) {
         this.name = name;
         this.password = password;
-//        netWork = new NetWork(this);
+        this.musicController = new MusicController();
+        this.library = new Library();
     }
 
     public String getName() {
         return name;
     }
 
-    public NetWork getNetWork() {
-        return netWork;
-    }
 
     public boolean canPass(String password) {
         return this.password.equals(password);

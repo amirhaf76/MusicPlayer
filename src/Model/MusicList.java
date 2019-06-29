@@ -1,6 +1,8 @@
 package Model;
 
-public class MusicList extends List {
+import java.io.Serializable;
+
+public class MusicList extends List implements Serializable {
 
     public MusicList(String name) {
         super(name);

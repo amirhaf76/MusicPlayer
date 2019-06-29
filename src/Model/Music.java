@@ -3,10 +3,14 @@ package Model;
 import mp3agic.*;
 import java.io.*;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.util.Formatter;
 import java.util.Objects;
+import java.util.SimpleTimeZone;
+import java.util.logging.SimpleFormatter;
 
 
-public class Music extends Media {
+public class Music extends Media implements Serializable {
 
     private boolean loaded = false;
     private String title = "<nothing>";
@@ -161,11 +165,21 @@ public class Music extends Media {
 
     @Override
     public String toString() {
+        Formatter formatter = new Formatter();
+        int second = (int) time % 60;
+        int minute = (int) ( time - second) / 60;
+        int hour = (int) (time - second - minute * 60) /3600;
+        if ( hour == 0 ) {
+            formatter.format("%2d : %2d", minute, second);
+        } else {
+            formatter.format("%2d : %2d : %2d", hour, minute, second);
+        }
         return "Title : " + title + '\n' +
                 artist + '\n' +
                 album + '\n' +
                 "Year : " + year + '\n' +
                 "Comment :" + comment + '\n' +
-                "Track :" + track;
+                "Track : " + track + '\n' +
+                "Time : " + formatter;
     }
 }

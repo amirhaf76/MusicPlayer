@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class PlayList extends ArrayList<Media> implements Serializable {
+public class PlayList extends ArrayList<Media> {
 
     private final String name;
 
@@ -12,7 +12,7 @@ public class PlayList extends ArrayList<Media> implements Serializable {
         this.name = name;
     }
 
-    private ArrayList<Music> getMusic() {
+    public ArrayList<Music> getMusic() {
         ArrayList<Music> musics = new ArrayList<>();
 
         for (Media m :this)
@@ -21,7 +21,9 @@ public class PlayList extends ArrayList<Media> implements Serializable {
         return musics;
     }
 
-    private void restPlayList() {
+    // TODO: 7/3/2019 Video
+
+    public void restPlayList() {
         this.removeAll(this);
     }
 

@@ -10,7 +10,7 @@ import java.util.Formatter;
 import java.util.Objects;
 
 
-public class Music extends Media implements Serializable {
+public class Music extends Media {
 
     // identification of Music
     private String title = "<nothing>";
@@ -27,8 +27,7 @@ public class Music extends Media implements Serializable {
     private boolean favorite = false;
     private boolean sharedMusic = false;
 
-    // serializable
-    private static final long serialVersionUID = 13984121L;
+
 
 
     public Music(LocalDateTime joinedTime, File file) {

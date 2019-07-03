@@ -12,6 +12,8 @@ public class Media implements Serializable {
    private final File file;
    private LocalDateTime lastTimePlayed;
 
+    // serializable
+    private static final long serialVersionUID = 13984121L;
 
     public Media(File file, LocalDateTime joinedTime) {
         this.file = file;

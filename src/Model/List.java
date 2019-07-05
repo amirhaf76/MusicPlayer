@@ -3,10 +3,9 @@ package Model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class List implements Serializable {
+public class List extends ArrayList<Media> implements Serializable {
 
     private String name;
-    private ArrayList<Media> medium = new ArrayList<>();
 
     private static final long serialVersionUID = 1398442L;
 
@@ -22,22 +21,12 @@ public class List implements Serializable {
         this.name = name;
     }
 
-    public ArrayList<Media> getMedium() {
-        return medium;
-    }
 
-
-    public void add(Media media) {
-        medium.add(media);
-    }
-    public void remove(Media media) {
-        medium.remove(media);
-    }
 
     public ArrayList<Music> getMusic() {
         ArrayList<Music> musics = new ArrayList<>();
         for (Media m :
-                medium) {
+                this) {
             if ( m instanceof Music ) {
                 musics.add((Music) m);
             }

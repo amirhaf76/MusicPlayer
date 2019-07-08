@@ -5,10 +5,10 @@ import javazoom.jl.decoder.Bitstream;
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
+import javax.swing.*;
 import java.io.InputStream;
-import java.io.Serializable;
 
-public class MachinePlayer extends Player implements Serializable {
+public class MachinePlayer extends Player {
 
     private Bitstream bitstream;
 
@@ -18,10 +18,15 @@ public class MachinePlayer extends Player implements Serializable {
         bitstream = new Bitstream(stream);
     }
 
-    public void skipMusicBasedOnFrame(int offset) throws JavaLayerException {
+    public void skipMusicBasedOnFrame(int offset) {
         boolean repeat = true;
         while (offset-- > 0 && repeat ) {
-            repeat = skipFrame();
+            try {
+                repeat = skipFrame();
+            } catch (JavaLayerException e) {
+                javax.swing.JOptionPane.showMessageDialog(null,
+                    "Error in frame working","Error",JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -31,21 +36,6 @@ public class MachinePlayer extends Player implements Serializable {
         bitstream.closeFrame();
         return true;
     }
-
-    // doesn't need this
-    public long findNumbersOfFrame() throws JavaLayerException {
-
-        boolean ret = true;
-        int size = 0;
-
-        while ( ret ) {
-            ret = skipFrame();
-            size++;
-        }
-
-        return size;
-    }
-
 
 
 }

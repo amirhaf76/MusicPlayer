@@ -12,9 +12,9 @@ import static javax.swing.JOptionPane.*;
 
 public class Music extends Media {
 
-    private String title = "<nothing>";
-    private Artist artist = new Artist("<nothing>");
-    private Album album = new Album("<nothing>",artist);
+    private String title = '<' + super.getFile().getName() + "\b\b\b\b" + '>';
+    private Artist artist = Artist.unknown;
+    private Album album = Album.unknown;
     private String  year = "<nothing>";
     private String comment = "<nothing>";
     private String track = "";
@@ -32,10 +32,35 @@ public class Music extends Media {
         loadMusic();
     }
 
+    public static Object[] addMusic(Music music, String artist, String album) {
+        Artist tempArtist = Artist.createArtist(artist);
+        Album tempAlbum = tempArtist.createAlbum(album);
+        tempAlbum.getMusics().add(music);
+
+        return new Object[]{tempArtist, tempAlbum};
+    }
+
     private void loadMusic() {
-        this.getID3v1();
-        this.getID3v2();
-        imageAlbum = getArtWork();
+        try {
+            this.getID3v1();
+            this.getID3v2();
+            imageAlbum = getArtWork();
+
+        } catch (IOException e) {
+            showMessageDialog(new JFrame(), "There is error in opening file",
+                    "Error", ERROR_MESSAGE);
+        } catch (UnsupportedTagException e) {
+            Music.addMusic(this, artist.getName(), album.getName());
+            showMessageDialog(new JFrame(), "This tag is not supported",
+                    "Error", ERROR_MESSAGE);
+        } catch (InvalidDataException e) {
+            showMessageDialog(new JFrame(), "The format is not valid",
+                    "Error", ERROR_MESSAGE);
+        } catch (NullPointerException e) {
+            Music.addMusic(this, artist.getName(), album.getName());
+            showMessageDialog(new JFrame(), "The file doesn't have id3v1",
+                    "Error", ERROR_MESSAGE);
+        }
     }
 
     public byte[] getImageAlbum() {
@@ -92,72 +117,36 @@ public class Music extends Media {
         this.shared = shared;
     }
 
-    private void getID3v1() {
-        ID3v1 id3v1 = null;
-        try {
-            id3v1 = (new Mp3File(getFile().getPath())).getId3v1Tag();
-            title = id3v1.getTitle();
-            artist = Artist.isThisArtist(id3v1.getArtist());
-            album = new Album(id3v1.getAlbum(), artist);
-            comment = id3v1.getComment();
-            year = id3v1.getYear();
-            track = id3v1.getTrack();
-            genre = id3v1.getGenre();
-        } catch (IOException e) {
-            showMessageDialog(new JFrame(), "There is error in opening file",
-                    "Error", ERROR_MESSAGE);
-        } catch (UnsupportedTagException e) {
-            showMessageDialog(new JFrame(), "This tag is not supported",
-                    "Error", ERROR_MESSAGE);
-        } catch (InvalidDataException e) {
-            showMessageDialog(new JFrame(), "The format is not valid",
-                    "Error", ERROR_MESSAGE);
-        }
+    private void getID3v1() throws InvalidDataException, IOException, UnsupportedTagException {
+        ID3v1 id3v1 = (new Mp3File(getFile().getPath())).getId3v1Tag();
+        title = id3v1.getTitle();
 
+        Object[] artistAndAlbum = Music.addMusic(this, id3v1.getArtist(), id3v1.getAlbum());
+        artist = (Artist) artistAndAlbum[0];
+        album = (Album) artistAndAlbum[1];
 
+        comment = id3v1.getComment();
+        year = id3v1.getYear();
+        track = id3v1.getTrack();
+        genre = id3v1.getGenre();
     }
 
-    private void getID3v2() {
-        Mp3File mp3File = null;
-        try {
-            mp3File = new Mp3File(getFile().getPath());
-            time = mp3File.getLengthInSeconds();
-            frames = mp3File.getFrameCount();
-        } catch (IOException e) {
-            showMessageDialog(new JFrame(), "There is error in opening file",
-                    "Error", ERROR_MESSAGE);
-        } catch (UnsupportedTagException e) {
-            showMessageDialog(new JFrame(), "This tag is not supported",
-                    "Error", ERROR_MESSAGE);
-        } catch (InvalidDataException e) {
-            showMessageDialog(new JFrame(), "The format is not valid",
-                    "Error", ERROR_MESSAGE);
-        }
-
+    private void getID3v2() throws InvalidDataException, IOException, UnsupportedTagException {
+        Mp3File mp3File = new Mp3File(getFile().getPath());
+        time = mp3File.getLengthInSeconds();
+        frames = mp3File.getFrameCount();
     }
 
-    private byte[] getArtWork() {
+    private byte[] getArtWork() throws InvalidDataException, IOException, UnsupportedTagException {
 
-        Mp3File mp3File = null;
-        try {
-            mp3File = new Mp3File(getFile().getPath());
-            if ( mp3File.hasId3v2Tag() ) {
+        Mp3File mp3File = new Mp3File(getFile().getPath());
+        if ( mp3File.hasId3v2Tag() ) {
 
-                byte[] imageBuffer = mp3File.getId3v2Tag().getAlbumImage();
+            byte[] imageBuffer = mp3File.getId3v2Tag().getAlbumImage();
 
-                if ( imageBuffer != null ) {
-                    return imageBuffer;
-                }
+            if ( imageBuffer != null ) {
+                return imageBuffer;
             }
-        } catch (IOException e) {
-            showMessageDialog(new JFrame(), "There is error in opening file",
-                    "Error", ERROR_MESSAGE);
-        } catch (UnsupportedTagException e) {
-            showMessageDialog(new JFrame(), "This tag is not supported",
-                    "Error", ERROR_MESSAGE);
-        } catch (InvalidDataException e) {
-            showMessageDialog(new JFrame(), "The format is not valid",
-                    "Error", ERROR_MESSAGE);
         }
 
         return new byte[0];

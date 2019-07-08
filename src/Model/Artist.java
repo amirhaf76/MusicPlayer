@@ -7,11 +7,7 @@ import java.util.Objects;
 public class Artist implements Serializable {
 
     private static ArrayList<Artist> artists = new ArrayList<>();
-    static Artist unknown = new Artist("<nothing>");
-    static {
-        unknown.createAlbum(Album.unknown.getName());
-        artists.add(unknown);
-    }
+    public static Artist unknown = new Artist("<nothing>");
 
     /**
      * identification of each Artist

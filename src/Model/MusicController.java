@@ -2,74 +2,87 @@ package Model;
 
 import Model.enumeration.Control;
 import Model.enumeration.Repetition;
-import javazoom.jl.decoder.JavaLayerException;
-import mp3agic.InvalidDataException;
-import mp3agic.UnsupportedTagException;
 
+import control.CMusicController;
+import javazoom.jl.decoder.JavaLayerException;
+import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Random;
 
 import static Model.enumeration.Control.*;
 import static Model.enumeration.Repetition.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
-public class MusicController extends MusicPlayer implements Serializable {
+@SuppressWarnings("Duplicates")
+public class MusicController implements Serializable {
 
     // file
     private Music presentMusic;
     private static final long serialVersionUID = 1398869L;
 
+    private JSlider slider;
+    private CMusicController cMusicController;
+
     // playing mode
-    private int indexOfShuffleMusic = 1;
     private Repetition repetitionState = ONCE;
     private boolean shuffle = false;
     private int indexOfMusic = 0;
+    private MusicList musicList = new MusicList();
+    private ListIterator<Music> musicListIterator = musicList.getMusics().listIterator();
     private ArrayList<Music> pastMusic = new ArrayList<>();
 
-    // player
-    private MachinePlayer player;
-
-
     // frames and time
-    private volatile int lastFrame = 0;
+    private int lastFrame = 0;
 
     // controlling
-    private final Object lock = super.getLock(); // make player lock
-    private Control command;
+    private final Object lock = musicList.getLock(); // make player lock
+    private Control command = STOP;
+    private Thread runPlayer;
 
-    public int getLastFrame() {
-        synchronized (lock) {
-            return lastFrame;
-        }
+
+    public MusicList getMusicList() {
+        return musicList;
     }
 
-    // constructor
-    public MusicController() {
-        command = NOTSTARTED;
+    public void setSlider(JSlider slider) {
+        this.slider = slider;
     }
 
+    public void setcMusicController(CMusicController cMusicController) {
+        this.cMusicController = cMusicController;
+    }
 
-    private void playMusic() {
+    private void play(MachinePlayer machinePlayer) {
 
-        Thread runPlayer = new Thread(new Runnable() {
+        runPlayer = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-
                     while (command.equals(Control.PLAYING)) {
 
-                        if (!player.play(1)) {
+                        if (!machinePlayer.play(1)) {
                             command = FINISH;
 //                            System.out.println(command);
-                            player.close();
+                            machinePlayer.close();
                             start();
                             break;
                         } else {
                             lastFrame++;
+
                         }
 
                         synchronized (lock) {
 
+                            if (slider != null ) {
+                                slider.removeChangeListener(slider.getChangeListeners()[0]);
+                                if ( !slider.getValueIsAdjusting() ){
+                                    slider.setValue(getPosition());
+                                }
+                                slider.addChangeListener(cMusicController.skipSlider());
+                            }
                             switch (command) {
                                 case PAUSE:
 //                                    System.out.println(command);
@@ -78,27 +91,31 @@ public class MusicController extends MusicPlayer implements Serializable {
 
                                 case SKIP:
 //                                    System.out.println(command);
-                                    player.close();
+                                    machinePlayer.close();
                                     lock.notify();
                                     break;
 
                                 case NEXT:
 //                                    System.out.println(command);
-                                    player.close();
+                                    machinePlayer.close();
                                     lock.notify();
                                     break;
                                 case PREVIOUS:
 //                                    System.out.println(command);
-                                    player.close();
+                                    machinePlayer.close();
                                     lock.notify();
                                     break;
                                 case STOP:
 //                                    System.out.println(command);
-                                    player.close();
+                                    machinePlayer.close();
                                     break;
                                 case FINISH:
 //                                    System.out.println(command);
-                                    player.close();
+                                    machinePlayer.close();
+                                    break;
+                                case SELECTMUSIC:
+                                    machinePlayer.close();
+                                    lock.notify();
                                 default:
 //                                    System.out.println(command);
                             }
@@ -106,13 +123,13 @@ public class MusicController extends MusicPlayer implements Serializable {
                         }
                     }
 
-                } catch (JavaLayerException | InterruptedException |
-                        IOException | InvalidDataException | UnsupportedTagException e) {
+
+                } catch (JavaLayerException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }, "Music player");
-//        runPlayer.setDaemon(true);
+
         runPlayer.setPriority(Thread.MAX_PRIORITY);
 
         runPlayer.start(); // if song reach to the end, player shutdownManager buffer
@@ -120,7 +137,7 @@ public class MusicController extends MusicPlayer implements Serializable {
     }
 
 
-    public void start() throws IOException, JavaLayerException, InvalidDataException, UnsupportedTagException {
+    public void start()  {
         synchronized (lock) {
             switch (command) {
                 case PAUSE:
@@ -131,21 +148,20 @@ public class MusicController extends MusicPlayer implements Serializable {
                 case STOP:
                     command = PLAYING;
                     if ( presentMusic == null ) {
-                        prepareMusic(super.getMusics().get(0));
+                        play( prepareMusic(musicList.getMusics().get(0)) );
                     } else {
-                        prepareMusic(presentMusic);
+                        play( prepareMusic(presentMusic) );
                     }
-                    playMusic();
+
                     break;
 
                 case FINISH:
-                case NOTSTARTED:
 
                     command = PLAYING;
 
                     // next music base on mode
-                    prepareMusic(nextMusicBasedOnMode());
-                    playMusic();
+                    play( prepareMusic(nextMusicBasedOnMode() ));
+
                     break;
 
             }
@@ -154,46 +170,62 @@ public class MusicController extends MusicPlayer implements Serializable {
 
     public void pause() {
         synchronized (lock) {
-            if ( command.equals(PLAYING) ) {
-                command = PAUSE;
-            }
+            command = PAUSE;
         }
     }
 
 
     public void stop() {
         synchronized (lock) {
-            command = Control.STOP;
+            command = STOP;
         }
     }
 
-    public void nextMusic() throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
+    public void nextMusic() {
+        // if status was Pause
         synchronized (lock) {
-            command = NEXT;
 
-            lock.wait();
-            prepareMusic(
-                    nextMusicBasedOnMode()
-            );
+            if ( command.equals(PAUSE) )
+                runPlayer.stop();
+            else if (command.equals(PLAYING)) {
+
+                command = NEXT;
+
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+                command = PLAYING;
+            play( prepareMusic(nextMusicBasedOnMode()) );
+        }
+    }
+
+    public void previousMusic() {
+        synchronized (lock) {
+
+            if ( command.equals(PAUSE) )
+                runPlayer.stop();
+            else if (command.equals(PLAYING)) {
+
+                command = PREVIOUS;
+
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             command = PLAYING;
-
-            playMusic();
-        }
-    }
-
-    public void previousMusic() throws InterruptedException, IOException, JavaLayerException, InvalidDataException, UnsupportedTagException {
-        synchronized (lock) {
-            command = PREVIOUS;
-            lock.wait();
 
             if (shuffle) {
-                prepareMusic( previousMusicBasedOnShuffle() );
+                play( prepareMusic( previousMusicBasedOnShuffle() ) );
             } else {
-                prepareMusic( previousMusicBasedOnArrangement() );
+                play( prepareMusic( previousMusicBasedOnArrangement() ) );
             }
-            command = PLAYING;
-            playMusic();
+
         }
     }
 
@@ -209,8 +241,8 @@ public class MusicController extends MusicPlayer implements Serializable {
         repetitionState = JUSTTHIS;
     }
 
-    public void shuffle() {
-        shuffle = !shuffle;
+    public void setShuffle(boolean shuffle) {
+        this.shuffle = shuffle;
     }
 
     public boolean isShuffle() {
@@ -221,35 +253,47 @@ public class MusicController extends MusicPlayer implements Serializable {
         return repetitionState;
     }
 
+    public int getPosition() {
+        return 100 * lastFrame/presentMusic.getFrames();
+    }
+
     // based on percentage
-    public void skipMusic(int percentage) throws IOException, JavaLayerException, InterruptedException, InvalidDataException, UnsupportedTagException {
+    public void skipMusic(int percentage)  {
         if ( percentage >= 0 && percentage <= 100) {
+
             if ( presentMusic != null ) {
                 // calculate frame number
-                int frameNumber = ((percentage * presentMusic.getFrames()) / 100);
 
-                Control lastCommand = command;
+                int frame = ((presentMusic.getFrames() * percentage) / 100);
                 synchronized (lock) {
 
-                    command = SKIP;
-                    lock.wait();
+                    if ( command.equals(PAUSE) ) {
+                        runPlayer.stop();
+                    }
+                    else if (command.equals(PLAYING) ) {
+                        command = SKIP;
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
 
                     // prepare music again
-                    prepareMusic(presentMusic);
+                    MachinePlayer mp = prepareMusic(presentMusic);
 
-                    // skip frames
-                    if ( lastFrame > frameNumber)
-                    lastFrame = frameNumber;
-                    player.skipMusicBasedOnFrame(frameNumber);
+                    if ( mp != null ) {
+                        System.out.println(frame);
+                        lastFrame = frame;
+                        mp.skipMusicBasedOnFrame(frame);
+                        command = PLAYING;
+                        play(mp);
+                    }
 
-                    command = PLAYING;
 
-                    playMusic();
                 }
-                // mode of player
-                if ( lastCommand.equals(PAUSE) ) {
-                    pause();
-                }
+
             }
         }
     }
@@ -262,93 +306,93 @@ public class MusicController extends MusicPlayer implements Serializable {
         return (lastFrame * presentMusic.getTime())/ presentMusic.getFrames();
     }
 
-    public void selectMusic(Music music, ArrayList<Media> medium) throws JavaLayerException, UnsupportedTagException, InvalidDataException, IOException, InterruptedException {
+    public void selectMusic(Music music) {
+        if ( musicList.getMusics().contains(music) ) {
+            synchronized (lock) {
+                command = SELECTMUSIC;
 
-        this.stop();
-        Thread.sleep(1000);
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-        if ( !medium.equals(super.getMusics()) ) {
-            super.removeAllMusics();
-            super.addMusic(medium);
+                presentMusic = musicList.getMusics().get(
+                        musicList.getMusics().indexOf(music) );
+
+                play( prepareMusic(presentMusic) );
+
+            }
+
         }
-        for (Music m :
-                super.getMusics()) {
-            if ( m.equals(music) ) {
-                presentMusic = m;
-                System.out.println(55);
+    }
+
+    private MachinePlayer prepareMusic(Music music){ // totally
+        synchronized (lock) {
+
+            // keep current music
+            presentMusic = music;
+
+            // prepare frame number
+            lastFrame = 0;
+
+            try {
+                BufferedInputStream buffer = new BufferedInputStream(
+                        new FileInputStream(presentMusic.getFile()));
+
+                return new MachinePlayer(buffer);
+
+            } catch (FileNotFoundException e) {
+                showMessageDialog(null, "There is not this file",
+                        "Error", ERROR_MESSAGE);
+            } catch (JavaLayerException e) {
+                javax.swing.JOptionPane.showMessageDialog(null,
+                        "Error in playing","Error",JOptionPane.ERROR_MESSAGE);
             }
         }
 
-        this.start();
-    }
-
-    private void prepareMusic(Music music) throws IOException, JavaLayerException, InvalidDataException, UnsupportedTagException { // totally
-        synchronized (lock) {
-            // save present music
-            presentMusic = music;
-
-            lastFrame = 0;
-
-            BufferedInputStream buffer = new BufferedInputStream(
-                    new FileInputStream(presentMusic.getMediaFile()));
-            player = new MachinePlayer(buffer);
-        }
-
+        return null;
     }
 
     private Music nextMusicBasedOnMode() {
 
         switch (repetitionState) {
             case ONCE:
-//                System.out.println("once");
-                if (shuffle) {
-                    if ( pastMusic.size() < super.getMusics().size() ) {
-                        return nextMusicBasedOnShuffle();
-                    } else {
+                if (shuffle)
+                    if ( pastMusic.equals(musicList.getMusics()) ) {
                         command = FINISH;
+                        break;
                     }
-                }
-                else {
-                    // when player go next music in nextMusicBasedOnArrangement
-                    // in last music indexOfMusic equals with once more than
-                    // size of musics in list of MusicPlayer
-                    if ( indexOfMusic < super.getMusics().size() ) {
-//                        System.out.println("once next");
-                        return nextMusicBasedOnArrangement();
-                    }
-                    else {
-//                        System.out.println("once: end");
+                else
+                    if ( indexOfMusic != 0) {
                         command = FINISH;
+                        break;
                     }
-                }
-                break;
-            case ALWAYS:
-//                System.out.println("always");
-                if (shuffle) {
-                    return nextMusicBasedOnShuffle();
-                } else {
-                    return nextMusicBasedOnArrangement();
-                }
 
-            case JUSTTHIS:
-                if ( presentMusic == null ) {
-                    return super.getMusics().get(0);
-                } else {
-                    return presentMusic;
-                }
+                    // continue
+
+            case ALWAYS:
+                if (shuffle)
+                    return nextMusicBasedOnShuffle();
+                else
+                    return nextMusicBasedOnArrangement();
+            default:
+
         }
-        return presentMusic; // !!!!!
+        return musicList.getMusics().get(0); // !!!!!
     }
 
 
     private Music nextMusicBasedOnShuffle() {
         Random random = new Random();
 
-        if ( !(pastMusic.size() < super.getMusics().size()) ) {
-            pastMusic.removeAll(super.getMusics().subList(0,super.getMusics().size()));
-        }
+        if ( pastMusic.equals(musicList.getMusics()) )
+            pastMusic.removeAll(musicList.getMusics());
+
         while (true) {
-            Music tempMusic = super.getMusics().get(random.nextInt(getMusics().size())); // TODO: 6/27/2019 check random
+            Music tempMusic = musicList.getMusics()
+                    .get(random.nextInt(musicList.getMusics().size() - 1)); // TODO: 6/27/2019 check random
+
             if ( !pastMusic.contains(tempMusic) ){
                 pastMusic.add(tempMusic);
                 return tempMusic;
@@ -362,54 +406,41 @@ public class MusicController extends MusicPlayer implements Serializable {
     private Music nextMusicBasedOnArrangement() {
         Music music;
 
-        if ( !(indexOfMusic < super.getMusics().size()) ) {
+        if ( indexOfMusic + 1 == musicList.getMusics().size())
             indexOfMusic = 0;
-        }
+        else
+            indexOfMusic++;
 
-        music = super.getMusics().get(indexOfMusic);
-        indexOfMusic++;
+        music = musicList.getMusics().get(indexOfMusic);
+
         return music;
-
     }
 
 
 
     private Music previousMusicBasedOnShuffle() {
         Music music;
-        if ( pastMusic.size() == 0 ){
+        if ( pastMusic.isEmpty() ){
             music = presentMusic;
         } else {
-            if ( indexOfShuffleMusic < super.getMusics().size() ) {
-                music = pastMusic.get(pastMusic.size()-1 - indexOfShuffleMusic);
-                indexOfShuffleMusic++;
-            }
-            else {
-                indexOfShuffleMusic = 1;
-                music = pastMusic.get(pastMusic.size()-1 - indexOfShuffleMusic);
-            }
+            music = pastMusic.get(pastMusic.size()-1);
         }
         pastMusic.remove(music);
+        pastMusic.trimToSize();
+
         return music;
     }
 
     private Music previousMusicBasedOnArrangement() {
-        if ( indexOfMusic == 0 ){
-            return super.getMusics().get(super.getMusics().size() - 1);
-        }
-        else if ( indexOfMusic >= super.getMusics().size() ){
-            if ( super.getMusics().size() > 1) {
-                indexOfMusic = getMusics().size() - 2;
-            } else {
-                indexOfMusic = 0;
-            }
-            return super.getMusics().get(indexOfMusic);
-        }
-        else {
+        if ( indexOfMusic - 1 >= 0 ) {
             indexOfMusic--;
-            return super.getMusics().get(indexOfMusic);
+            return musicList.getMusics().get(indexOfMusic);
+        } else {
+            indexOfMusic = musicList.getMusics().size()-1;
+            return musicList.getMusics().get(indexOfMusic);
         }
-    }
 
+    }
 
 
 

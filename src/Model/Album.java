@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Album implements Serializable {
 
-    static Album unknown = new Album("<nothing>", Artist.unknown);
+    public static Album unknown = new Album("<nothing>", Artist.unknown);
 
     private final String name;
     private final Artist artist;

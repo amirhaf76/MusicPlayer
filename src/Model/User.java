@@ -1,28 +1,18 @@
 package Model;
 
-
-import network.NetWork;
-import storage.ReloadFile;
-import storage.Storage;
-
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class User implements Serializable {
 
     private String name;
     private String password;
-    private InetAddress ip;
+
 
     private Library library = new Library();
-    private transient MusicController musicController = new MusicController();
-
-    private ArrayList<InetAddress> friends = new ArrayList<>();
-
+    private InetAddress ip;
 
 
     private static final long serialVersionUID = 13984987879741L;
@@ -30,49 +20,31 @@ public class User implements Serializable {
     public User(String name, String password) {
         this.name = name;
         this.password = password;
-        this.musicController = new MusicController();
-        this.library = new Library();
     }
 
-    public void setMusicController(MusicController musicController) {
-        this.musicController = musicController;
+    public String getPassword() {
+        return password;
     }
 
     public String getName() {
         return name;
     }
 
-
-    public boolean canPass(String password) {
-        return this.password.equals(password);
-    }
-
     public Library getLibrary() {
         return library;
     }
 
-    public void setLibrary(Library library) {
-        this.library = library;
-    }
-
     public InetAddress getIp() {
+        loadIp();
         return ip;
     }
 
-    public void addFriend(InetAddress ip) {
-        friends.add(ip);
-    }
-
-    public void removeFriend(InetAddress ip) {
-        friends.remove(ip);
-    }
-
-    public ArrayList<InetAddress> getFriends() {
-        return friends;
-    }
-
-    public MusicController getMusicController() {
-        return musicController;
+    private void loadIp() {
+        try {
+            ip = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

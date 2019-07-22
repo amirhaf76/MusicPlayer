@@ -24,20 +24,11 @@ public class Jpotify implements Serializable {
     public void addUser(User user) {
         users.add(user);
     }
-    public static void sortByArtist(ArrayList<Media> medium) {
-        medium.sort(new SortByArtist() );
-    }
-    public static void sortByAlbum(ArrayList<Media> medium) {
-        medium.sort(new SortByAlbum());
-    }
-    public static void sortByRescntly(ArrayList<Media> medium) {
-        medium.sort(new SortByRecently());
-    }
+
 
     public void loadUser() {
         for (User u :
                 users) {
-            u.setMusicController(new MusicController());
         }
     }
 }

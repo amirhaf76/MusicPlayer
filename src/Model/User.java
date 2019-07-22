@@ -11,8 +11,8 @@ public class User implements Serializable {
     private String password;
 
 
-    private Library library = new Library();
-    private InetAddress ip;
+    private transient Library library = new Library();
+    private InetAddress ip = null;
 
 
     private static final long serialVersionUID = 13984987879741L;
@@ -20,10 +20,6 @@ public class User implements Serializable {
     public User(String name, String password) {
         this.name = name;
         this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getName() {
@@ -34,12 +30,21 @@ public class User implements Serializable {
         return library;
     }
 
+    public void setLibrary(Library library) {
+        this.library = library;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
     public InetAddress getIp() {
-        loadIp();
         return ip;
     }
 
-    private void loadIp() {
+
+
+    public void loadIp() {
         try {
             ip = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {

@@ -32,7 +32,7 @@ public class Music extends Media {
         loadMusic();
     }
 
-    public static Object[] addMusic(Music music, String artist, String album) {
+    private static Object[] addMusic(Music music, String artist, String album) {
         Artist tempArtist = Artist.createArtist(artist);
         Album tempAlbum = tempArtist.createAlbum(album);
         tempAlbum.getMusics().add(music);
@@ -152,6 +152,9 @@ public class Music extends Media {
         return new byte[0];
     }
 
+    public void remove() {
+        Artist.getArtists().remove(this.getArtist());
+    }
 
     @Override
     public int hashCode() {

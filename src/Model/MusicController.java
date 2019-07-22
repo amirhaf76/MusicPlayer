@@ -6,7 +6,10 @@ import Model.enumeration.Repetition;
 import control.CMusicController;
 import javazoom.jl.decoder.JavaLayerException;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.io.*;
+import java.security.DrbgParameters;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Random;
@@ -47,9 +50,7 @@ public class MusicController implements Serializable {
         return musicList;
     }
 
-    public void setSlider(JSlider slider) {
-        this.slider = slider;
-    }
+
 
     public void setcMusicController(CMusicController cMusicController) {
         this.cMusicController = cMusicController;
@@ -71,18 +72,19 @@ public class MusicController implements Serializable {
                             break;
                         } else {
                             lastFrame++;
-
+                            System.out.println(lastFrame);
                         }
 
                         synchronized (lock) {
 
-                            if (slider != null ) {
-                                slider.removeChangeListener(slider.getChangeListeners()[0]);
-                                if ( !slider.getValueIsAdjusting() ){
-                                    slider.setValue(getPosition());
-                                }
-                                slider.addChangeListener(cMusicController.skipSlider());
-                            }
+//                            if (slider != null ) {
+//                                System.out.println("change state:" + slider.getValue());
+//                                if ( !slider.getValueIsAdjusting() ){
+//                                    slider.removeChangeListener(changeListener);
+//                                    slider.setValue(getPosition());
+//                                }
+//                                slider.addChangeListener(changeListener);
+//                            }
                             switch (command) {
                                 case PAUSE:
 //                                    System.out.println(command);
@@ -185,10 +187,9 @@ public class MusicController implements Serializable {
         // if status was Pause
         synchronized (lock) {
 
-            if ( command.equals(PAUSE) )
-                runPlayer.stop();
-            else if (command.equals(PLAYING)) {
+            closePlayer();
 
+            if (command.equals(PLAYING)) {
                 command = NEXT;
 
                 try {
@@ -205,10 +206,9 @@ public class MusicController implements Serializable {
     public void previousMusic() {
         synchronized (lock) {
 
-            if ( command.equals(PAUSE) )
-                runPlayer.stop();
-            else if (command.equals(PLAYING)) {
+            closePlayer();
 
+            if (command.equals(PLAYING)) {
                 command = PREVIOUS;
 
                 try {
@@ -267,10 +267,9 @@ public class MusicController implements Serializable {
                 int frame = ((presentMusic.getFrames() * percentage) / 100);
                 synchronized (lock) {
 
-                    if ( command.equals(PAUSE) ) {
-                        runPlayer.stop();
-                    }
-                    else if (command.equals(PLAYING) ) {
+                    closePlayer();
+
+                    if (command.equals(PLAYING) ) {
                         command = SKIP;
                         try {
                             lock.wait();
@@ -442,7 +441,12 @@ public class MusicController implements Serializable {
 
     }
 
-
+    private void closePlayer() {
+        if ( command.equals(PAUSE) ) {
+            notifyAll();
+            command = STOP;
+        }
+    }
 
 }
 

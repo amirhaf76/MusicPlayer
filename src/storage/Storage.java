@@ -6,35 +6,45 @@ import Model.User;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.time.LocalDateTime;
 
 public class Storage {
 
-    private final String parent;
-    private final User user;
+    private static String parent = "Data";
 
-
-    public Storage(User user) {
-        this.user = user;
-        parent = "User:" + user.getName();
+    public static boolean makeDataFolder() {
+        return new File(parent).mkdir();
     }
 
-    static public void saveJpotify(Jpotify jpotify) throws IOException {
-        File file = new File("Jpotify.j");
+    public static boolean makeUserFolder(String name) {
+        File folder = new File(parent + "\\" + name);
+        return folder.mkdir();
+    }
 
-        if ( !file.exists() ) {
-            if ( !file.createNewFile()) {
-                JOptionPane.showMessageDialog( new Frame(),
-                        "There is problem in making folder",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
+    public static void saveJustUser(User user) {
+        File file = new File(parent +
+                "\\" + user.getName() +
+                "\\" + "User_" +
+                user.getName()
+        );
+
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream(
+                           file
+                    )
+            );
+            oos.writeObject(user);
+            oos.close();
+        } catch (IOException e) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                    "Error in saving user!",
+                    null, JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
 
-        FileOutputStream savedFile = new FileOutputStream(file);
-        ObjectOutputStream out = new ObjectOutputStream(savedFile);
-        out.writeObject(jpotify);
-        out.close();
-        savedFile.close();
     }
+
 
 
 }

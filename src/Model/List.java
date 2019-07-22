@@ -1,13 +1,13 @@
 package Model;
 
-import java.io.Serializable;
+import Model.SortsClass.SortByAlbum;
+import Model.SortsClass.SortByArtist;
+import Model.SortsClass.SortByRecently;
 import java.util.ArrayList;
 
-public class List extends ArrayList<Media> implements Serializable {
+public class List extends ArrayList<Media> {
 
     private String name;
-
-    private static final long serialVersionUID = 1398442L;
 
     public List(String name) {
         this.name = name;
@@ -34,6 +34,15 @@ public class List extends ArrayList<Media> implements Serializable {
         return  musics;
     }
 
+    public static void sortByArtist(ArrayList<Media> medium) {
+        medium.sort(new SortByArtist() );
+    }
+    public static void sortByAlbum(ArrayList<Media> medium) {
+        medium.sort(new SortByAlbum());
+    }
+    public static void sortByRescntly(ArrayList<Media> medium) {
+        medium.sort(new SortByRecently());
+    }
     // TODO: 6/25/2019 public ArrayList<Video> getVideo(){}
 
 }

@@ -6,49 +6,50 @@ import Model.Album;
 import Model.Artist;
 import Model.Music;
 import mp3agic.InvalidDataException;
+import mp3agic.Mp3File;
 import mp3agic.UnsupportedTagException;
 import org.junit.jupiter.api.*;
 import java.io.*;
 import java.sql.Time;
+import java.time.LocalDateTime;
 
 
 class MusicTest {
 
-    private static Music music;
-    private static Artist artist;
-    private static Album album;
+    private static Music music1;
+    private static Music music2;
+    private static Music music3;
+    private static Music music4;
 
-    @BeforeAll
-    static void setUp() {
-
-        String parent = "I:\\Amir.haf76's Files\\Univercity\\" +
-                "ProjectOfJava\\src\\Test\\FileOfTest\\";
-
-        File file = new File(parent + "Sham Pain - Five Finger Death Punch.mp3");
-        Time time = new Time(System.currentTimeMillis());
-
-        artist = new Artist("Five Finger Death Punch");
-        album = new Album("Sham Pain - Single",artist);
+    private static String parent = "I:\\Amir.haf76's Files\\Univercity\\Advance programming\\" +
+            "Final Project of Java\\src\\Test\\FileOfTest\\";
 
 
-        try {
-            music = new Music(file, time);
-        } catch (UnsupportedTagException | IOException | InvalidDataException e) {
-            e.printStackTrace();
-        }
+    static {
+        music1 = new Music(new File(parent + "Natural - Imagine Dragons.mp3"),
+                LocalDateTime.now());
+        music2 = new Music(new File( parent + "Sham Pain - Five Finger Death Punch.mp3"),
+                LocalDateTime.now());
+        music3 = new Music(new File(parent + "Homemade Dynamite Remix - Lorde.mp3"),
+                LocalDateTime.now());
+        music4 = new Music(new File(parent + "40662.mp3"),
+                LocalDateTime.now());
     }
 
     @Test
-    void getDetails() {
-        assertEquals("Sham Pain", music.getTitle());
-        assertEquals(artist, music.getArtist());
-        assertEquals(album, music.getAlbum());
-        assertEquals("2018", music.getYear());
-        assertEquals("sham pain music", music.getComment());
-        assertEquals(20, music.getGenre());
-        assertEquals("22", music.getTrack());
+    void testArtists() {
+        assertTrue(Artist.getArtists().contains(new Artist("Imagine Dragons")));
+        assertTrue(Artist.getArtists().contains(new Artist("Five Finger Death Punch")));
+        assertTrue(Artist.getArtists().contains(new Artist("Lorde")));
+        assertFalse(Artist.getArtists().contains(new Artist("50cent")));
 
+        music3.remove();
+        assertFalse(Artist.getArtists().contains(new Artist("Lorde")));
+        System.out.println("Test of Artist is completed.");
 
+//        for ( Artist a: Artist.getArtists())
+//            System.out.println(a);
     }
+
 
 }

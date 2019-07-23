@@ -2,6 +2,7 @@ package Model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Library implements Serializable {
 
@@ -69,5 +70,19 @@ public class Library implements Serializable {
         }
 
         return sharedMusic;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Library library = (Library) o;
+        return medium.equals(library.medium) &&
+                playList.equals(library.playList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(medium, playList);
     }
 }

@@ -1,12 +1,8 @@
 package storage;
 
-import Model.Jpotify;
 import Model.User;
-
 import javax.swing.*;
-import java.awt.*;
 import java.io.*;
-import java.time.LocalDateTime;
 
 public class Storage {
 
@@ -30,9 +26,7 @@ public class Storage {
 
         try {
             ObjectOutputStream oos = new ObjectOutputStream(
-                    new FileOutputStream(
-                           file
-                    )
+                    new FileOutputStream(file)
             );
             oos.writeObject(user);
             oos.close();
@@ -40,11 +34,35 @@ public class Storage {
             javax.swing.JOptionPane.showMessageDialog(null,
                     "Error in saving user!",
                     null, JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
 
     }
 
+    public static void saveJustLibrary(User user) {
+        File file = new File(parent + "\\" +
+                user.getName() + "\\" +
+                "Library_" + user.getName()
+        );
 
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(
+                    new FileOutputStream(file)
+            );
+            oos.writeObject(user.getLibrary());
+            oos.close();
+        } catch (IOException e) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                    "Error in saving Library!",
+                    null, JOptionPane.ERROR_MESSAGE);
 
+        }
+    }
+
+    public static String getParent() {
+        return parent;
+    }
+
+    public static void setParent(String parent) {
+        Storage.parent = parent;
+    }
 }

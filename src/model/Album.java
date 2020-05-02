@@ -1,12 +1,10 @@
-package Model;
+package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Album implements Serializable {
-
-    public static Album unknown = new Album("<nothing>", Artist.unknown);
 
     private final String name;
     private final Artist artist;
@@ -29,11 +27,6 @@ public class Album implements Serializable {
 
     public ArrayList<Music> getMusics() {
         return musics;
-    }
-
-    public void addMusic(Music music) {
-        if ( music.getArtist().equals(artist) )
-            musics.add(music);
     }
 
     @Override

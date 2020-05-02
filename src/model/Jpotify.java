@@ -1,11 +1,5 @@
-package Model;
+package model;
 
-import Model.SortsClass.SortByAlbum;
-import Model.SortsClass.SortByArtist;
-import Model.SortsClass.SortByRecently;
-import storage.ReloadFile;
-
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 

@@ -1,8 +1,8 @@
-package Model;
+package model;
 
-import Model.SortsClass.SortByAlbum;
-import Model.SortsClass.SortByArtist;
-import Model.SortsClass.SortByRecently;
+import model.SortsClass.SortByAlbum;
+import model.SortsClass.SortByArtist;
+import model.SortsClass.SortByRecently;
 import java.util.ArrayList;
 
 public class List extends ArrayList<Media> {

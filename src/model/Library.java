@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,16 +36,11 @@ public class Library implements Serializable {
     }
 
     public ArrayList<Artist> getArtists() {
-        return Artist.getArtists();
+        return null;
     }
 
     public ArrayList<Album> getAlbums() {
-        ArrayList<Album> albums = new ArrayList<>();
-        for (Artist artist :
-                getArtists()) {
-            albums.addAll(artist.getAlbums());
-        }
-        return albums;
+        return null;
     }
 
     public ArrayList<Music> getFavorites() {

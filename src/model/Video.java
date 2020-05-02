@@ -1,8 +1,7 @@
-package Model;
+package model;
 
 import java.io.File;
 import java.io.Serializable;
-import java.sql.Time;
 import java.time.LocalDateTime;
 
 

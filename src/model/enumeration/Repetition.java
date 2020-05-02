@@ -1,4 +1,4 @@
-package Model.enumeration;
+package model.enumeration;
 
 import java.io.Serializable;
 

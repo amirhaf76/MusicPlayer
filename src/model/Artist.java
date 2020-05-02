@@ -1,13 +1,11 @@
-package Model;
+package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class Artist implements Serializable {
-
-    private static ArrayList<Artist> artists = new ArrayList<>();
-    public static Artist unknown = new Artist("<nothing>");
 
     /**
      * identification of each Artist
@@ -22,27 +20,8 @@ public class Artist implements Serializable {
         this.name = name;
     }
 
-
-    public static Artist createArtist(String name) {
-        Artist temp = new Artist(name);
-        if ( artists.contains(temp) )
-            return artists.get( artists.indexOf(temp) );
-        artists.add(temp);
-        return temp;
-    }
-
-
-    public Album createAlbum(String name) {
-        Album temp = new Album(name, this);
-        if ( albums.contains(temp) )
-            return albums.get( albums.indexOf(temp) );
-        albums.add(temp);
-
-        return temp;
-    }
-
-    public static ArrayList<Artist> getArtists() {
-        return artists;
+    public void addAlbum(Album album) {
+        albums.add(album);
     }
 
     public String getName() {
@@ -53,13 +32,13 @@ public class Artist implements Serializable {
         return albums;
     }
 
-    private ArrayList<Music> getMusic() {
-        ArrayList<Music> music = new ArrayList<>();
-        for (Album a :
+    private Iterator<Music> getAllMusic() {
+        ArrayList<Music> temp = new ArrayList<>();
+        for (Album alm :
                 albums) {
-            music.addAll(a.getMusics());
+            temp.addAll(alm.getMusics());
         }
-        return music;
+        return temp.iterator();
     }
 
     @Override

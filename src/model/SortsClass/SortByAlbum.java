@@ -1,7 +1,7 @@
-package Model.SortsClass;
+package model.SortsClass;
 
-import Model.Media;
-import Model.Music;
+import model.Media;
+import model.Music;
 import java.util.Comparator;
 
 public class SortByAlbum implements Comparator<Media> {

@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import mp3agic.*;
 import java.io.*;
@@ -13,8 +13,8 @@ import static javax.swing.JOptionPane.*;
 public class Music extends Media {
 
     private String title = '<' + super.getFile().getName() + "\b\b\b\b" + '>';
-    private Artist artist = Artist.unknown;
-    private Album album = Album.unknown;
+    private Artist artist = new Artist("<unknown>");
+    private Album album = new Album("unknown", artist);
     private String  year = "<nothing>";
     private String comment = "<nothing>";
     private String track = "";
@@ -32,14 +32,6 @@ public class Music extends Media {
         loadMusic();
     }
 
-    private static Object[] addMusic(Music music, String artist, String album) {
-        Artist tempArtist = Artist.createArtist(artist);
-        Album tempAlbum = tempArtist.createAlbum(album);
-        tempAlbum.getMusics().add(music);
-
-        return new Object[]{tempArtist, tempAlbum};
-    }
-
     private void loadMusic() {
         try {
             this.getID3v1();
@@ -50,14 +42,12 @@ public class Music extends Media {
             showMessageDialog(new JFrame(), "There is error in opening file",
                     "Error", ERROR_MESSAGE);
         } catch (UnsupportedTagException e) {
-            Music.addMusic(this, artist.getName(), album.getName());
             showMessageDialog(new JFrame(), "This tag is not supported",
                     "Error", ERROR_MESSAGE);
         } catch (InvalidDataException e) {
             showMessageDialog(new JFrame(), "The format is not valid",
                     "Error", ERROR_MESSAGE);
         } catch (NullPointerException e) {
-            Music.addMusic(this, artist.getName(), album.getName());
             showMessageDialog(new JFrame(), "The file doesn't have id3v1",
                     "Error", ERROR_MESSAGE);
         }
@@ -121,9 +111,8 @@ public class Music extends Media {
         ID3v1 id3v1 = (new Mp3File(getFile().getPath())).getId3v1Tag();
         title = id3v1.getTitle();
 
-        Object[] artistAndAlbum = Music.addMusic(this, id3v1.getArtist(), id3v1.getAlbum());
-        artist = (Artist) artistAndAlbum[0];
-        album = (Album) artistAndAlbum[1];
+        artist = new Artist(id3v1.getArtist());
+        album = new Album(id3v1.getAlbum(), artist);
 
         comment = id3v1.getComment();
         year = id3v1.getYear();
@@ -150,10 +139,6 @@ public class Music extends Media {
         }
 
         return new byte[0];
-    }
-
-    public void remove() {
-        Artist.getArtists().remove(this.getArtist());
     }
 
     @Override

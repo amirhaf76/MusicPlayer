@@ -1,8 +1,7 @@
-package Model;
+package model;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+
 import java.util.Objects;
 
 public class User implements Serializable {
@@ -12,7 +11,6 @@ public class User implements Serializable {
 
 
     private transient Library library = new Library();
-    private InetAddress ip = null;
 
 
     private static final long serialVersionUID = 13984987879741L;
@@ -38,25 +36,12 @@ public class User implements Serializable {
         return password;
     }
 
-    public InetAddress getIp() {
-        return ip;
-    }
 
-
-
-    public void loadIp() {
-        try {
-            ip = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
-                ", ip=" + ip +
                 '}';
     }
 

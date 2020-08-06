@@ -1,13 +1,14 @@
-package model;
+package Model;
 
-import model.SortsClass.SortByAlbum;
-import model.SortsClass.SortByArtist;
-import model.SortsClass.SortByRecently;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class List extends ArrayList<Media> {
+public class List implements Serializable {
 
     private String name;
+    private ArrayList<Media> medium = new ArrayList<>();
+
+    private static final long serialVersionUID = 1398442L;
 
     public List(String name) {
         this.name = name;
@@ -21,12 +22,22 @@ public class List extends ArrayList<Media> {
         this.name = name;
     }
 
+    public ArrayList<Media> getMedium() {
+        return medium;
+    }
 
+
+    public void add(Media media) {
+        medium.add(media);
+    }
+    public void remove(Media media) {
+        medium.remove(media);
+    }
 
     public ArrayList<Music> getMusic() {
         ArrayList<Music> musics = new ArrayList<>();
         for (Media m :
-                this) {
+                medium) {
             if ( m instanceof Music ) {
                 musics.add((Music) m);
             }
@@ -34,15 +45,6 @@ public class List extends ArrayList<Media> {
         return  musics;
     }
 
-    public static void sortByArtist(ArrayList<Media> medium) {
-        medium.sort(new SortByArtist() );
-    }
-    public static void sortByAlbum(ArrayList<Media> medium) {
-        medium.sort(new SortByAlbum());
-    }
-    public static void sortByRescntly(ArrayList<Media> medium) {
-        medium.sort(new SortByRecently());
-    }
     // TODO: 6/25/2019 public ArrayList<Video> getVideo(){}
 
 }

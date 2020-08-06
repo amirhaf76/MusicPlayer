@@ -1,14 +1,13 @@
-package model;
+package Model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Album implements Serializable {
-
     private final String name;
     private final Artist artist;
-    private final ArrayList<Music> musics = new ArrayList<>();
+    private ArrayList<Music> musics = new ArrayList<>();
 
     private static final long serialVersionUID = 1398443L;
 
@@ -27,6 +26,17 @@ public class Album implements Serializable {
 
     public ArrayList<Music> getMusics() {
         return musics;
+    }
+
+    public void addMusic(Music music) {
+        if ( music.getArtist().equals(artist) ) {
+            this.musics.add(music);
+        }
+    }
+    public void removeMusic(Music music) {
+        if ( music.getArtist().equals(artist) ) {
+            this.musics.remove(music);
+        }
     }
 
     @Override

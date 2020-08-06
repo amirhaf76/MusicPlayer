@@ -5,51 +5,51 @@ import static org.junit.jupiter.api.Assertions.*;
 import Model.Media;
 import org.junit.jupiter.api.*;
 import java.io.File;
-import java.time.LocalDateTime;
+import java.sql.Time;
 
 class MediaTest {
 
     private static Media media;
-    private static LocalDateTime time;
+    private static Time time;
 
     @BeforeAll
     static void setUp() {
 
         File file = new File("I:\\Amir.haf76's Files\\Univercity\\" +
                 "ProjectOfJava\\src\\Test\\FileOfTest\\Sham Pain - Five Finger Death Punch.mp3");
-        time = LocalDateTime.now();
+        time = new Time(System.currentTimeMillis());
         media = new Media(file,
-                LocalDateTime.now());
+                new Time(System.currentTimeMillis()));
 
     }
 
     @Test
-    @DisplayName("getFile")
+    @DisplayName("getMediaFile")
     void getMediaFile() {
 
-        assertNotNull(media.getFile());
+        assertNotNull(media.getMediaFile());
         assertEquals("I:\\Amir.haf76's Files\\Univercity\\" +
         "ProjectOfJava\\src\\Test\\FileOfTest\\Sham Pain - Five Finger Death Punch.mp3",
-                media.getFile().getAbsolutePath() );
+                media.getMediaFile().getAbsolutePath() );
         assertEquals("I:\\Amir.haf76's Files\\Univercity\\" +
         "ProjectOfJava\\src\\Test\\FileOfTest",
-                media.getFile().getParent() );
+                media.getMediaFile().getParent() );
         assertEquals("Sham Pain - Five Finger Death Punch.mp3",
-                media.getFile().getName() );
+                media.getMediaFile().getName() );
 
     }
 
     @Test
-    @DisplayName("setJoinedTime")
+    @DisplayName("setAddedTime")
     void setTime() {
-        time = LocalDateTime.now();
-        media.setJoinedTime(time);
-        assertEquals(time, media.getJoinedTime());
+        time = new Time(System.currentTimeMillis());
+        media.setAddedTime(time);
+        assertEquals(time, media.getAddedTime());
     }
 
     @Test
-    @DisplayName("getJoinedTime")
+    @DisplayName("getAddedTime")
     void getTime() {
-        assertEquals(time, media.getJoinedTime());
+        assertEquals(time, media.getAddedTime());
     }
 }

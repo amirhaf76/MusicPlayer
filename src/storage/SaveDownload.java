@@ -3,7 +3,6 @@ package storage;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import static javax.swing.JOptionPane.*;
 
 public class SaveDownload {
 
@@ -12,16 +11,14 @@ public class SaveDownload {
     private final File file;
 
     public SaveDownload(String userName, String name){
+
+        // first make folder, then make file
         file = makeFile(makeFolder(userName), name);
     }
 
     private String makeFolder(String userName) {
-        String path = Storage.getParent() + "\\" +
-                userName + "\\" +
-                userName + "_(Download)";
-
-        File folder = new File(path);
-
+        String path = userName + "(Download)";
+        File folder = new File(userName + "(Download)");
         if ( !folder.isDirectory() ) {
             if ( !folder.mkdir() ) {
                 JOptionPane.showMessageDialog( new Frame(),
@@ -38,6 +35,7 @@ public class SaveDownload {
 
     public void saveData(byte[] data) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(file, "rw");
+
         raf.seek(raf.length());
 
         raf.write(data);

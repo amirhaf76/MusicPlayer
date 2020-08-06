@@ -3,9 +3,6 @@ package storage;
 import java.io.*;
 import java.util.ArrayList;
 
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
-
 public class DownloadFile {
 
     private final File file;
@@ -19,38 +16,30 @@ public class DownloadFile {
         this.file = file;
     }
 
-    public void prepareForSending() {
+    public void prepareForSending() throws IOException {
+        BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(file));
+        int bytesAccount;
 
-        try {
-            BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(file));
-            int bytesAccount;
-
-            while ( true ) {
-                byte[] temp = new byte[MB];
-                if ( (bytesAccount = buffer.read(temp)) == -1 ) {
-                    break;
-                }
-                if (bytesAccount == MB) {
-
-                    data.add(temp);
-
-                }
-                else {
-                    byte[] bytes = new byte[bytesAccount];
-                    System.arraycopy(temp, 0, bytes, 0, bytesAccount);
-                    data.add(bytes);
-
-                }
+        while ( true ) {
+            byte[] temp = new byte[MB];
+            if ( (bytesAccount = buffer.read(temp)) == -1 ) {
+                break;
             }
+            if (bytesAccount == MB) {
 
-            ready = true;
-            buffer.close();
+                data.add(temp);
 
-        } catch (IOException e) {
-            showMessageDialog(null,
-                    "There is error in prepare for Downloading",
-                    null, ERROR_MESSAGE);
+            }
+            else {
+                byte[] bytes = new byte[bytesAccount];
+                System.arraycopy(temp, 0, bytes, 0, bytesAccount);
+                data.add(bytes);
+
+            }
         }
+
+        ready = true;
+        buffer.close();
     }
 
     public ArrayList<byte[]> getData() {

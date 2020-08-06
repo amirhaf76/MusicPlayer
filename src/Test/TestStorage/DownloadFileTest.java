@@ -15,27 +15,19 @@ class DownloadFileTest {
     private static DownloadFile downloadFile;
     private static String parent;
 
-    static {
-        parent = "I:" + File.separator +
-                "Amir.haf76's Files" + File.separator +
-                "Univercity" + File.separator +
-                "Advance programming" + File.separator +
-                "Final Project of Java" + File.separator +
-                "src" + File.separator +
-                "Test" + File.separator +
-                "FileOfTest" + File.separator;
-        downloadFile = new DownloadFile(new File(parent + "Natural - Imagine Dragons.mp3"));
-    }
 
+
+
+    void setUp() throws FileNotFoundException {
+        parent = "I:\\Amir.haf76's Files\\Univercity\\ProjectOfJava\\src\\Test\\FileOfTest\\";
+        downloadFile = new DownloadFile(new File(parent + "Natural - Imagine Dragons.mp3"));
+
+    }
 
     @Test
     void prepareForSending() throws IOException {
-        File file = new File(parent + "TestPrepare"+".mp3");
-        File file1 = new File("TestPrepare"+".mp3");
-        file.getParentFile().mkdir();
-        file.createNewFile();
-
-        RandomAccessFile fos = new RandomAccessFile(file, "rws");
+        setUp();
+        RandomAccessFile fos = new RandomAccessFile(parent + "TestPrepare"+".mp3", "rw");
         assertFalse(downloadFile.isReady());
         downloadFile.prepareForSending();
         assertTrue(downloadFile.isReady());
@@ -46,6 +38,8 @@ class DownloadFileTest {
         }
         fos.close();
 
+        assertEquals(0, downloadFile.getPartOfData().length);
+        assertEquals(0, downloadFile.getPartOfData().length);
         assertTrue(downloadFile.isEnd());
     }
 

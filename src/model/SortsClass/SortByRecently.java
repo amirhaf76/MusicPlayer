@@ -1,10 +1,12 @@
-package model.SortsClass;
+package Model.SortsClass;
 
-import model.Media;
-import model.Music;
+import Model.Media;
+import Model.Music;
+
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class SortByRecently implements Comparator<Media> {
+public class SortByRecently implements Comparator<Media>, Serializable {
     @Override
     public int compare(Media o1, Media o2) {
         if ( o1 instanceof Music && o2 instanceof Music ) {

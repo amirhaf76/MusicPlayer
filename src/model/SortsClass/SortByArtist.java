@@ -1,12 +1,10 @@
-package Model.SortsClass;
+package model.SortsClass;
 
-import Model.Media;
-import Model.Music;
-
-import java.io.Serializable;
+import model.Media;
+import model.Music;
 import java.util.Comparator;
 
-public class SortByArtist implements Comparator<Media> , Serializable {
+public class SortByArtist implements Comparator<Media> {
 
     @Override
     public int compare(Media o1, Media o2) {

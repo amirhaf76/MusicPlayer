@@ -1,20 +1,13 @@
 package Test.TestPlayer;
 
-import Model.MachinePlayer;
-import Model.Music;
-import Model.MusicController;
+import model.MachinePlayer;
 import javazoom.jl.decoder.JavaLayerException;
-import mp3agic.InvalidDataException;
-import mp3agic.UnsupportedTagException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Time;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 

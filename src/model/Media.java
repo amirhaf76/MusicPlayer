@@ -1,18 +1,19 @@
-package Model;
+package model;
 
 import java.io.File;
 import java.io.Serializable;
-import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Media implements Serializable {
-    private final File mediaFile;
-    private Time addedTime;
-    private Time lastTime; // TODO: 6/25/2019 add to music player
+
+    private final File file;
+    private LocalDateTime joinedTime;
+    private LocalDateTime lastTime;
     private static final long serialVersionUID = 139864L;
-    public Media(File mediaFile, Time addedTime) {
-        this.mediaFile = mediaFile;
-        this.addedTime = addedTime;
+    public Media(File file, LocalDateTime joinedTime) {
+        this.file = file;
+        this.joinedTime = joinedTime;
     }
 
     public String getName() {
@@ -22,23 +23,23 @@ public class Media implements Serializable {
         return "<it's not Music>";
     }
 
-    public File getMediaFile() {
-        return mediaFile;
+    public File getFile() {
+        return file;
     }
 
-    public Time getAddedTime() {
-        return addedTime;
+    public LocalDateTime getJoinedTime() {
+        return joinedTime;
     }
 
-    public void setAddedTime(Time addedTime) {
-        this.addedTime = addedTime;
+    public void setJoinedTime(LocalDateTime joinedTime) {
+        this.joinedTime = joinedTime;
     }
 
-    public Time getLastTime() {
+    public LocalDateTime getLastTime() {
         return lastTime;
     }
 
-    public void setLastTime(Time lastTime) {
+    public void setLastTime(LocalDateTime lastTime) {
         this.lastTime = lastTime;
     }
 
@@ -47,11 +48,11 @@ public class Media implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Media media = (Media) o;
-        return mediaFile.equals(media.mediaFile);
+        return file.equals(media.file);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mediaFile);
+        return Objects.hash(file);
     }
 }

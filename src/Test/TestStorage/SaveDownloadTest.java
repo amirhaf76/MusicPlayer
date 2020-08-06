@@ -13,27 +13,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SaveDownloadTest {
 
-    private SaveDownload saveDownload;
-    private DownloadFile downloadFile;
-    private String parent;
-    private String nameFile;
+    private static SaveDownload saveDownload;
+    private static DownloadFile downloadFile;
+    private static String parent;
+    private static String nameFile;
 
-    void setUp() throws IOException {
+    static {
         parent = "I:\\Amir.haf76's Files\\Univercity\\ProjectOfJava\\src\\Test\\FileOfTest\\";
         nameFile = "Homemade Dynamite Remix - Lorde.mp3";
         downloadFile = new DownloadFile(new File(parent + nameFile));
         saveDownload = new SaveDownload("amirhosein", nameFile);
 
         downloadFile.prepareForSending();
-
     }
 
+
     @Test
-    void saveData() throws IOException {
-        setUp();
+    void saveData() {
+
         assertFalse(saveDownload.isEnd());
         while ( !downloadFile.isEnd() ) {
-            saveDownload.saveData(downloadFile.getPartOfData());
+
+            try {
+                saveDownload.saveData(downloadFile.getPartOfData());
+            } catch (IOException e) {
+                System.out.println("Error");
+                break;
+            }
         }
         saveDownload.end();
         assertTrue(saveDownload.isEnd());

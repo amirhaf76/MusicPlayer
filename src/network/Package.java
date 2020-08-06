@@ -1,6 +1,6 @@
 package network;
 
-import Model.Music;
+import model.Music;
 
 import java.io.Serializable;
 import java.util.ArrayList;

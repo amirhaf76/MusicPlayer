@@ -1,6 +1,5 @@
-import Model.Jpotify;
-import Model.Music;
-import Model.User;
+import model.Jpotify;
+import model.User;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
 import storage.ReloadFile;
@@ -8,7 +7,6 @@ import storage.Storage;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 
 public class Main{
 

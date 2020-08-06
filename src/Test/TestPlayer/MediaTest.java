@@ -2,54 +2,54 @@ package Test.TestPlayer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import Model.Media;
+import model.Media;
 import org.junit.jupiter.api.*;
 import java.io.File;
-import java.sql.Time;
+import java.time.LocalDateTime;
 
 class MediaTest {
 
     private static Media media;
-    private static Time time;
+    private static LocalDateTime time;
 
     @BeforeAll
     static void setUp() {
 
         File file = new File("I:\\Amir.haf76's Files\\Univercity\\" +
                 "ProjectOfJava\\src\\Test\\FileOfTest\\Sham Pain - Five Finger Death Punch.mp3");
-        time = new Time(System.currentTimeMillis());
+        time = LocalDateTime.now();
         media = new Media(file,
-                new Time(System.currentTimeMillis()));
+                LocalDateTime.now());
 
     }
 
     @Test
-    @DisplayName("getMediaFile")
+    @DisplayName("getFile")
     void getMediaFile() {
 
-        assertNotNull(media.getMediaFile());
+        assertNotNull(media.getFile());
         assertEquals("I:\\Amir.haf76's Files\\Univercity\\" +
         "ProjectOfJava\\src\\Test\\FileOfTest\\Sham Pain - Five Finger Death Punch.mp3",
-                media.getMediaFile().getAbsolutePath() );
+                media.getFile().getAbsolutePath() );
         assertEquals("I:\\Amir.haf76's Files\\Univercity\\" +
         "ProjectOfJava\\src\\Test\\FileOfTest",
-                media.getMediaFile().getParent() );
+                media.getFile().getParent() );
         assertEquals("Sham Pain - Five Finger Death Punch.mp3",
-                media.getMediaFile().getName() );
+                media.getFile().getName() );
 
     }
 
     @Test
-    @DisplayName("setAddedTime")
+    @DisplayName("setJoinedTime")
     void setTime() {
-        time = new Time(System.currentTimeMillis());
-        media.setAddedTime(time);
-        assertEquals(time, media.getAddedTime());
+        time = LocalDateTime.now();
+        media.setJoinedTime(time);
+        assertEquals(time, media.getJoinedTime());
     }
 
     @Test
-    @DisplayName("getAddedTime")
+    @DisplayName("getJoinedTime")
     void getTime() {
-        assertEquals(time, media.getAddedTime());
+        assertEquals(time, media.getJoinedTime());
     }
 }

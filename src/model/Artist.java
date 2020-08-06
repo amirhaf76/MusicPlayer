@@ -1,37 +1,27 @@
-package Model;
+package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class Artist implements Serializable {
-    private final String name;
-    private ArrayList<Album> albums = new ArrayList<>();
-    private Album unknown = new Album("Unknown", this);
 
+    /**
+     * identification of each Artist
+     */
+    private final String name;
+    private final ArrayList<Album> albums = new ArrayList<>();
+
+    // serialization
     private static final long serialVersionUID = 1398444L;
 
     public Artist(String name) {
         this.name = name;
-
     }
 
     public void addAlbum(Album album) {
-        if ( name.equals(album.getArtist().getName()) ) {
-            albums.add(album);
-        }
-    }
-
-    public void addMusic(Music music) {
-        if ( albums.contains(music.getAlbum()) ) {
-            for (Album a: albums) {
-                if ( a.equals(music.getAlbum()) ){
-                    a.addMusic(music);
-                }
-            }
-        } else {
-            unknown.addMusic(music);
-        }
+        albums.add(album);
     }
 
     public String getName() {
@@ -42,17 +32,13 @@ public class Artist implements Serializable {
         return albums;
     }
 
-    public Album getUnknown() {
-        return unknown;
-    }
-
-    private ArrayList<Music> getMusic() {
-        ArrayList<Music> music = new ArrayList<>();
-        for (Album a :
+    private Iterator<Music> getAllMusic() {
+        ArrayList<Music> temp = new ArrayList<>();
+        for (Album alm :
                 albums) {
-            music.addAll(a.getMusics());
+            temp.addAll(alm.getMusics());
         }
-        return music;
+        return temp.iterator();
     }
 
     @Override

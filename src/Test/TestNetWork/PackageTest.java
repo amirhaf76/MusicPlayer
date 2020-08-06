@@ -1,6 +1,6 @@
 package Test.TestNetWork;
 
-import Model.Music;
+import model.Music;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
 import network.Package;

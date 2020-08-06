@@ -1,7 +1,7 @@
 package Test.TestPlayer;
 
-import Model.Music;
-import Model.MusicController;
+import model.Music;
+import model.MusicController;
 import javazoom.jl.decoder.JavaLayerException;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;

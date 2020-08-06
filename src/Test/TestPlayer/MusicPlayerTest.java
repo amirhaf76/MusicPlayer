@@ -1,7 +1,7 @@
 package Test.TestPlayer;
 
-import Model.Music;
-import Model.MusicPlayer;
+import model.Music;
+import model.MusicPlayer;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
 import org.junit.jupiter.api.BeforeAll;

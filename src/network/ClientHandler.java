@@ -1,7 +1,7 @@
 package network;
 
-import Model.Music;
-import Model.User;
+import model.Music;
+import model.User;
 import mp3agic.InvalidDataException;
 import mp3agic.UnsupportedTagException;
 import storage.DownloadFile;

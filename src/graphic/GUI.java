@@ -7,12 +7,11 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 public class GUI {
@@ -22,8 +21,11 @@ public class GUI {
     private final Dimension MAIN_PANEL_DIMENSION = new Dimension(screenSize.width, screenSize.height- 100);
     private final Point MAIN_PANEL_POINT = new Point(0, 0);
 
+    private final String BACKGROUND_PANEL = "backgroundPanel.jpg";
+    private final String MAIN_BACKGROUND_PANEL = "mainBackgroundPanel.jpg";
+
     private final Dimension MUSIC_LIST_PANEL_DIMENSION = new Dimension(
-            MAIN_PANEL_DIMENSION.width/3,
+            MAIN_PANEL_DIMENSION.width/4,
             MAIN_PANEL_DIMENSION.height*2/3
     );
     private final Dimension CONTROL_MUSIC_PANEL_DIMENSION = new Dimension(
@@ -31,7 +33,7 @@ public class GUI {
             MAIN_PANEL_DIMENSION.height/3
     );
     private final Dimension MONITORING_PANEL_DIMENSION = new Dimension(
-            MAIN_PANEL_DIMENSION.width*2/3,
+            MAIN_PANEL_DIMENSION.width*3/4,
             MAIN_PANEL_DIMENSION.height*2/3
     );
 
@@ -44,27 +46,56 @@ public class GUI {
     }
 
     private JFrame prepareMainFrame() {
-        JFrame tempFrame = new JFrame("Music Player");
+        JFrame mainFrame = new JFrame("Music Player");
+        mainFrame.setLayout(new BorderLayout());
+        mainFrame.setSize(MAIN_PANEL_DIMENSION);
+        mainFrame.setLocation(MAIN_PANEL_POINT);
+        mainFrame.setResizable(false);
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        tempFrame.setLayout(new BorderLayout());
-        tempFrame.setSize(MAIN_PANEL_DIMENSION);
-        tempFrame.setLocation(MAIN_PANEL_POINT);
-        tempFrame.setResizable(false);
-        tempFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        return tempFrame;
+        return mainFrame;
     }
 
     private JPanel prepareMusicListPanel() {
         // prepare panel
         JPanel musicJListPanel = createCustomizedPanel();
-        musicJListPanel.setLayout(new GridBagLayout());
 
         GridBagConstraints gridTemp = createDefaultGridBagConstraints();
 
-        JList<Music> musicJList = createJList();
+        musicJListPanel.setLayout(new GridBagLayout());
 
-        musicJListPanel.add(musicJList, gridTemp);
+//        JList<Music> musicJList = createJList();
+        JList<String> musicJList = createJList();
+        String[] names = new String[30];
+        Formatter fm = new Formatter();
+        for (int i = 0; i < 30 ; ++i) {
+            names[i] = "name"+ i;
+        }
+        musicJList.setListData(names);
+
+        JLabel label = new JLabel(fm.format("%-20s, %-20s, %-20s","Title", "Name", "Time").toString());
+        label.setMinimumSize(new Dimension(MUSIC_LIST_PANEL_DIMENSION.width,
+                MUSIC_LIST_PANEL_DIMENSION.height/3));
+
+        JPanel panel = createCustomizedPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder());
+        panel.setLayout(new BorderLayout());
+        panel.add(musicJList, BorderLayout.CENTER);
+
+        JScrollPane musicJScroll = new JScrollPane(panel);
+        musicJScroll.setBorder(createEtchedAndBevelBorder());
+        musicJScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        musicJScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        musicJScroll.setMinimumSize(MUSIC_LIST_PANEL_DIMENSION);
+
+        gridTemp.gridheight = 1;
+        gridTemp.anchor = GridBagConstraints.LINE_START;
+        gridTemp.gridy = 0;
+        musicJListPanel.add(label, gridTemp);
+
+        gridTemp.gridheight = 2;
+        gridTemp.gridy = 1;
+        musicJListPanel.add(musicJScroll, gridTemp);
 
         return musicJListPanel;
     }
@@ -217,12 +248,29 @@ public class GUI {
         return controlButton;
     }
 
+    private JPanel prepareMonitoringPanel() {
+
+        JPanel musicsLabelPanel = createMusicLabel(50, new ArrayList<>());
+
+        JScrollPane jMonScroll = new JScrollPane(musicsLabelPanel);
+        jMonScroll.setBorder(createEtchedAndBevelBorder());
+        jMonScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jMonScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jMonScroll.setMinimumSize(MONITORING_PANEL_DIMENSION);
+
+        JPanel panel = createCustomizedPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(jMonScroll, BorderLayout.CENTER);
+
+        return panel;
+    }
+
     public JFrame getMAIN_PANEL() {
         return MAIN_PANEL;
     }
 
     private void addPanelToMainPanel() {
-        JPanel monitoringPanel = prepareControlMusicPanel();
+        JPanel monitoringPanel = prepareMonitoringPanel();
         JPanel musicListPanel = prepareMusicListPanel();
         JPanel controlMusicPanel = prepareControlMusicPanel();
 
@@ -240,6 +288,52 @@ public class GUI {
         MAIN_PANEL.add(controlMusicPanel, BorderLayout.SOUTH);
     }
 
+    private JPanel createMusicLabel(int numberOfMusicLabel, List<Music> musics) {
+
+        GridBagConstraints gridTemp = createDefaultGridBagConstraints();
+        JPanel musicsLabelPanel = createCustomizedPanel();
+        musicsLabelPanel.setLayout(new GridBagLayout());
+
+
+        try {
+            Image image = ImageIO.read(new File(BACKGROUND_PANEL));
+            ImageIcon imageIcon = new ImageIcon(image.getScaledInstance(200,200, Image.SCALE_DEFAULT));
+
+            Dimension elementDimension = new Dimension(
+                    200,
+                    200
+            );
+            JLabel[] buttons = new JLabel[numberOfMusicLabel];
+
+            for (int i = 0; i < numberOfMusicLabel; ++i) {
+                buttons[i] = new JLabel(imageIcon);
+                buttons[i].setPreferredSize(elementDimension);
+                buttons[i].setMinimumSize(elementDimension);
+                buttons[i].setMaximumSize(elementDimension);
+            }
+
+            int y = 0;
+            int x = 0;
+            gridTemp.anchor = GridBagConstraints.CENTER;
+            gridTemp.insets = new Insets(10,10, 10, 10);
+            for (JLabel b :
+                    buttons) {
+                gridTemp.gridx = x % 6;
+                gridTemp.gridy = y;
+
+                musicsLabelPanel.add(b, gridTemp);
+                if ( (x%6) == 5 ) ++y;
+
+                ++x;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return musicsLabelPanel;
+    }
+
     private JLabel createInfoLabel(String txt) {
         JLabel label = new JLabel('<' + txt + '>');
 
@@ -250,38 +344,27 @@ public class GUI {
         return label;
     }
 
-    private Border createBorder() {
+    private <T> JList<T> createJList() {
+        JList<T> list = new JList<>();
 
-        return BorderFactory.createCompoundBorder(
-                BorderFactory.createEtchedBorder(EtchedBorder.LOWERED),
-                BorderFactory.createBevelBorder(BevelBorder.RAISED)
-        );
+        list.setBackground(Color.gray);
+        list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        Border linedBorder = BorderFactory.createLoweredBevelBorder();
+        list.setBorder(linedBorder);
+
+        return list;
     }
 
     private <T> JList<T> createJList(int width , int height) {
-        JList<T> list = new JList<>();
+        JList<T> list = createJList();
 
         Dimension listDimension = new Dimension(width, height);
-
-        list.setBackground(Color.gray);
 
         list.setPreferredSize(listDimension);
         list.setMinimumSize(listDimension);
         list.setMaximumSize(listDimension);
 
-        Border linedBorder = BorderFactory.createLoweredBevelBorder();
-        Border titledBorder = BorderFactory.createTitledBorder(linedBorder,
-                "Music List",
-                TitledBorder.DEFAULT_JUSTIFICATION,
-                TitledBorder.TOP);
-        list.setBorder(titledBorder);
-
         return list;
-    }
-
-    private <T> JList<T> createJList() {
-        return createJList(MUSIC_LIST_PANEL_DIMENSION.width,
-                MUSIC_LIST_PANEL_DIMENSION.height);
     }
 
     private GridBagConstraints createDefaultGridBagConstraints() {
@@ -295,9 +378,16 @@ public class GUI {
         );
     }
 
+    private Border createEtchedAndBevelBorder() {
+        return BorderFactory.createCompoundBorder(
+                BorderFactory.createEtchedBorder(EtchedBorder.LOWERED),
+                BorderFactory.createBevelBorder(BevelBorder.RAISED)
+        );
+    }
+
     private JPanel createCustomizedPanel() {
         JPanel jPanel = new JPanel();
-        jPanel.setBorder(createBorder());
+        jPanel.setBorder(createEtchedAndBevelBorder());
         jPanel.setBackground(Color.gray);
 
         return jPanel;

@@ -90,5 +90,7 @@ public class MusicController {
     private void alphabeticalMusics() {musicList.alphabeticalSortMusics();}
 
 
-
+    public void addMusic(Music music) {
+        this.musicList.addMusic(music);
+    }
 }

@@ -1,8 +1,8 @@
 package storage;
 
 
-import Model.Library;
-import Model.User;
+import model.Library;
+import model.User;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;

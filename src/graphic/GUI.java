@@ -41,6 +41,22 @@ public class GUI {
         MAIN_PANEL = prepareMainFrame();
         addPanelToMainPanel();
         MAIN_PANEL.validate();
+
+        String srt1 = "javax.swing.plaf.metal.MetalLookAndFeel";
+        String srt2 = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+        String srt3 = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+        String srt4 = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+        String srt5 = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+        String srt6 = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+
+        try {
+            UIManager.setLookAndFeel(srt3);
+            SwingUtilities.updateComponentTreeUI(MAIN_PANEL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JFrame.setDefaultLookAndFeelDecorated(true);
+
         MAIN_PANEL.setVisible(true);
 
     }
@@ -351,18 +367,6 @@ public class GUI {
         list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         Border linedBorder = BorderFactory.createLoweredBevelBorder();
         list.setBorder(linedBorder);
-
-        return list;
-    }
-
-    private <T> JList<T> createJList(int width , int height) {
-        JList<T> list = createJList();
-
-        Dimension listDimension = new Dimension(width, height);
-
-        list.setPreferredSize(listDimension);
-        list.setMinimumSize(listDimension);
-        list.setMaximumSize(listDimension);
 
         return list;
     }
